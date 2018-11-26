@@ -1,0 +1,90 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{9057F769-A406-4ED6-8275-264E15027473}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>ConsoleApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Chart.js</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".codeclimate.yml" />
+    <None Include=".eslintignore" />
+    <None Include=".eslintrc.json" />
+    <None Include=".gitignore" />
+    <None Include=".travis.yml" />
+    <None Include="bower.json" />
+    <None Include="composer.json" />
+    <None Include="CONTRIBUTING.md" />
+    <None Include="docs\00-Getting-Started.md" />
+    <None Include="docs\01-Line-Chart.md" />
+    <None Include="docs\02-Bar-Chart.md" />
+    <None Include="docs\03-Radar-Chart.md" />
+    <None Include="docs\04-Polar-Area-Chart.md" />
+    <None Include="docs\05-Pie-Doughnut-Chart.md" />
+    <None Include="docs\06-Advanced.md" />
+    <None Include="docs\07-Notes.md" />
+    <None Include="LICENSE.md" />
+    <None Include="package-lock.json" />
+    <None Include="package.json" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Chart.min.js" />
+    <Content Include="gulpfile.js" />
+    <Content Include="samples\bar.html" />
+    <Content Include="samples\doughnut.color.html" />
+    <Content Include="samples\doughnut.html" />
+    <Content Include="samples\line-customTooltips.html" />
+    <Content Include="samples\line.html" />
+    <Content Include="samples\pie-customTooltips.html" />
+    <Content Include="samples\pie.html" />
+    <Content Include="samples\polar-area.html" />
+    <Content Include="samples\radar.html" />
+    <Content Include="src\Chart.Bar.js" />
+    <Content Include="src\Chart.Core.js" />
+    <Content Include="src\Chart.Doughnut.js" />
+    <Content Include="src\Chart.Line.js" />
+    <Content Include="src\Chart.PolarArea.js" />
+    <Content Include="src\Chart.Radar.js" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>

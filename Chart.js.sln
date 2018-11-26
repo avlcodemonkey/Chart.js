@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chart.js", "Chart.js.csproj", "{9057F769-A406-4ED6-8275-264E15027473}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9057F769-A406-4ED6-8275-264E15027473}.Debug|x86.ActiveCfg = Debug|x86
+		{9057F769-A406-4ED6-8275-264E15027473}.Debug|x86.Build.0 = Debug|x86
+		{9057F769-A406-4ED6-8275-264E15027473}.Release|x86.ActiveCfg = Release|x86
+		{9057F769-A406-4ED6-8275-264E15027473}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C7F2835-2963-4F6C-9017-13B2097A7C77}
+	EndGlobalSection
+EndGlobal

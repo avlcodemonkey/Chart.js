@@ -1,0 +1,38 @@
+{
+    /* See all the pre-defined configs here: https://www.npmjs.com/package/eslint-config-defaults */
+    "extends": "eslint:recommended",
+    "env": {
+        "browser": true,
+        "amd": true,
+        "es6": true
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4,
+            { "SwitchCase": 1 }
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "space-before-function-paren": [
+            "error",
+            "never"
+        ],
+        "eqeqeq": 2,
+        "semi-spacing": 1,
+        "valid-jsdoc": [
+            2,
+            { "requireReturn": false }
+        ]
+    }
+}
