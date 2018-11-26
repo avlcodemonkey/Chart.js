@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
     concat = require('gulp-concat'),
-    uglify = require('gulp-uglify'),
     util = require('gulp-util'),
     jshint = require('gulp-jshint'),
     size = require('gulp-size'),
@@ -41,8 +40,6 @@ gulp.task('build', function() {
         .pipe(concat('Chart.js'))
         .pipe(replace('{{ version }}', package.version))
         .pipe(gulp.dest(outputDir))
-        //.pipe(uglify({ preserveComments: 'some' }))
-        .pipe(concat('Chart.min.js'))
         .pipe(gulp.dest(outputDir));
 
     function FileName(moduleName) {
