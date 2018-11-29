@@ -1,68 +1,66 @@
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
     var defaultConfig = {
-
-        ///Boolean - Whether grid lines are shown across the chart
+        // Boolean - Whether grid lines are shown across the chart
         scaleShowGridLines: true,
 
-        //String - Colour of the grid lines
-        scaleGridLineColor: "rgba(0,0,0,.05)",
+        // String - Colour of the grid lines
+        scaleGridLineColor: 'rgba(0,0,0,.05)',
 
-        //Number - Width of the grid lines
+        // Number - Width of the grid lines
         scaleGridLineWidth: 1,
 
-        //Boolean - Whether to show horizontal lines (except X axis)
+        // Boolean - Whether to show horizontal lines (except X axis)
         scaleShowHorizontalLines: true,
 
-        //Boolean - Whether to show vertical lines (except Y axis)
+        // Boolean - Whether to show vertical lines (except Y axis)
         scaleShowVerticalLines: true,
 
-        //Boolean - Whether the line is curved between points
+        // Boolean - Whether the line is curved between points
         bezierCurve: true,
 
-        //Number - Tension of the bezier curve between points
+        // Number - Tension of the bezier curve between points
         bezierCurveTension: 0.4,
 
-        //Boolean - Whether to show a dot for each point
+        // Boolean - Whether to show a dot for each point
         pointDot: true,
 
-        //Number - Radius of each point dot in pixels
+        // Number - Radius of each point dot in pixels
         pointDotRadius: 4,
 
-        //Number - Pixel width of point dot stroke
+        // Number - Pixel width of point dot stroke
         pointDotStrokeWidth: 1,
 
-        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
         pointHitDetectionRadius: 20,
 
-        //Boolean - Whether to show a stroke for datasets
+        // Boolean - Whether to show a stroke for datasets
         datasetStroke: true,
 
-        //Number - Pixel width of dataset stroke
+        // Number - Pixel width of dataset stroke
         datasetStrokeWidth: 2,
 
-        //Boolean - Whether to fill the dataset with a colour
+        // Boolean - Whether to fill the dataset with a colour
         datasetFill: true,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].strokeColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>",
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>',
 
-        //Boolean - Whether to horizontally center the label and point dot inside the grid
+        // Boolean - Whether to horizontally center the label and point dot inside the grid
         offsetGridLines: false
-
     };
 
-
     Chart.Type.extend({
-        name: "Line",
+        name: 'Line',
         defaults: defaultConfig,
+
         initialize: function(data) {
-            //Declare the extension of the default point, to cater for the options passed in to the constructor
+            // Declare the extension of the default point, to cater for the options passed in to the constructor
             this.PointClass = Chart.Point.extend({
                 offsetGridLines: this.options.offsetGridLines,
                 strokeWidth: this.options.pointDotStrokeWidth,
@@ -77,7 +75,7 @@
 
             this.datasets = [];
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activePoints = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
@@ -92,9 +90,8 @@
                 });
             }
 
-            //Iterate through each of the datasets, and build this into a property of the chart
+            // Iterate through each of the datasets, and build this into a property of the chart
             helpers.each(data.datasets, function(dataset) {
-
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
@@ -103,12 +100,10 @@
                     pointStrokeColor: dataset.pointStrokeColor,
                     points: []
                 };
-
                 this.datasets.push(datasetObject);
 
-
                 helpers.each(dataset.data, function(dataPoint, index) {
-                    //Add a new point for each piece of data, passing any required data to draw.
+                    // Add a new point for each piece of data, passing any required data to draw.
                     datasetObject.points.push(new this.PointClass({
                         value: dataPoint,
                         label: data.labels[index],
@@ -122,7 +117,6 @@
 
                 this.buildScale(data.labels);
 
-
                 this.eachPoints(function(point, index) {
                     helpers.extend(point, {
                         x: this.scale.calculateX(index),
@@ -130,12 +124,11 @@
                     });
                     point.save();
                 }, this);
-
             }, this);
-
 
             this.render();
         },
+
         update: function() {
             this.scale.update();
             // Reset any highlight colours before updating.
@@ -147,11 +140,13 @@
             });
             this.render();
         },
+
         eachPoints: function(callback) {
             helpers.each(this.datasets, function(dataset) {
                 helpers.each(dataset.points, callback, this);
             }, this);
         },
+
         getPointsAtEvent: function(e) {
             var pointsArray = [],
                 eventPosition = helpers.getRelativePosition(e);
@@ -162,6 +157,7 @@
             }, this);
             return pointsArray;
         },
+
         buildScale: function(labels) {
             var self = this;
 
@@ -170,7 +166,6 @@
                 self.eachPoints(function(point) {
                     values.push(point.value);
                 });
-
                 return values;
             };
 
@@ -205,7 +200,7 @@
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
                 showVerticalLines: this.options.scaleShowVerticalLines,
                 gridLineWidth: (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : 'rgba(0,0,0,0)',
                 padding: (this.options.showScale) ? 0 : this.options.pointDotRadius + this.options.pointDotStrokeWidth,
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
@@ -221,14 +216,13 @@
                 });
             }
 
-
             this.scale = new Chart.Scale(scaleOptions);
         },
-        addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
 
+        addData: function(valuesArray, label) {
+            // Map the values array for each of the datasets
             helpers.each(valuesArray, function(value, datasetIndex) {
-                //Add a new point for each piece of data, passing any required data to draw.
+                // Add a new point for each piece of data, passing any required data to draw.
                 this.datasets[datasetIndex].points.push(new this.PointClass({
                     value: value,
                     label: label,
@@ -241,17 +235,19 @@
             }, this);
 
             this.scale.addXLabel(label);
-            //Then re-render the chart.
+            // Then re-render the chart.
             this.update();
         },
+
         removeData: function() {
             this.scale.removeXLabel();
-            //Then re-render the chart.
+            // Then re-render the chart.
             helpers.each(this.datasets, function(dataset) {
                 dataset.points.shift();
             }, this);
             this.update();
         },
+
         reflow: function() {
             var newScaleProps = helpers.extend({
                 height: this.chart.height,
@@ -259,6 +255,7 @@
             });
             this.scale.update(newScaleProps);
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
             this.clear();
@@ -266,26 +263,18 @@
             var ctx = this.chart.ctx;
 
             // Some helper methods for getting the next/prev points
-            var hasValue = function(item) {
-                return item.value !== null;
-            },
-                nextPoint = function(point, collection, index) {
-                    return helpers.findNextWhere(collection, hasValue, index) || point;
-                },
-                previousPoint = function(point, collection, index) {
-                    return helpers.findPreviousWhere(collection, hasValue, index) || point;
-                };
+            var hasValue = function(item) { return item.value !== null; },
+                nextPoint = function(point, collection, index) { return helpers.findNextWhere(collection, hasValue, index) || point; },
+                previousPoint = function(point, collection, index) { return helpers.findPreviousWhere(collection, hasValue, index) || point; };
 
             if (!this.scale) return;
             this.scale.draw(easingDecimal);
 
-
             helpers.each(this.datasets, function(dataset) {
                 var pointsWithValues = helpers.where(dataset.points, hasValue);
 
-                //Transition each point first so that the line and point drawing isn't out of sync
-                //We can use this extra loop to calculate the control points of this dataset also in this loop
-
+                // Transition each point first so that the line and point drawing isn't out of sync
+                // We can use this extra loop to calculate the control points of this dataset also in this loop
                 helpers.each(dataset.points, function(point, index) {
                     if (point.hasValue()) {
                         point.transition({
@@ -294,7 +283,6 @@
                         }, easingDecimal);
                     }
                 }, this);
-
 
                 // Control points need to be calculated in a separate loop, because we need to know the current x/y of the point
                 // This would cause issues when there is no animation, because the y of the next point would be 0, so beziers would be skewed
@@ -309,27 +297,23 @@
                         );
 
                         // Prevent the bezier going outside of the bounds of the graph
-
                         // Cap puter bezier handles to the upper/lower scale bounds
                         if (point.controlPoints.outer.y > this.scale.endPoint) {
                             point.controlPoints.outer.y = this.scale.endPoint;
-                        }
-                        else if (point.controlPoints.outer.y < this.scale.startPoint) {
+                        } else if (point.controlPoints.outer.y < this.scale.startPoint) {
                             point.controlPoints.outer.y = this.scale.startPoint;
                         }
 
                         // Cap inner bezier handles to the upper/lower scale bounds
                         if (point.controlPoints.inner.y > this.scale.endPoint) {
                             point.controlPoints.inner.y = this.scale.endPoint;
-                        }
-                        else if (point.controlPoints.inner.y < this.scale.startPoint) {
+                        } else if (point.controlPoints.inner.y < this.scale.startPoint) {
                             point.controlPoints.inner.y = this.scale.startPoint;
                         }
                     }, this);
                 }
 
-
-                //Draw the line between all the points
+                // Draw the line between all the points
                 ctx.lineWidth = this.options.datasetStrokeWidth;
                 ctx.strokeStyle = dataset.strokeColor;
                 ctx.beginPath();
@@ -337,11 +321,9 @@
                 helpers.each(pointsWithValues, function(point, index) {
                     if (index === 0) {
                         ctx.moveTo(point.x, point.y);
-                    }
-                    else {
+                    } else {
                         if (this.options.bezierCurve) {
                             var previous = previousPoint(point, pointsWithValues, index);
-
                             ctx.bezierCurveTo(
                                 previous.controlPoints.outer.x,
                                 previous.controlPoints.outer.y,
@@ -350,8 +332,7 @@
                                 point.x,
                                 point.y
                             );
-                        }
-                        else {
+                        } else {
                             ctx.lineTo(point.x, point.y);
                         }
                     }
@@ -362,7 +343,7 @@
                 }
 
                 if (this.options.datasetFill && pointsWithValues.length > 0) {
-                    //Round off the line by going to the base of the chart, back to the start, then fill.
+                    // Round off the line by going to the base of the chart, back to the start, then fill.
                     ctx.lineTo(pointsWithValues[pointsWithValues.length - 1].x, this.scale.endPoint);
                     ctx.lineTo(pointsWithValues[0].x, this.scale.endPoint);
                     ctx.fillStyle = dataset.fillColor;
@@ -370,15 +351,13 @@
                     ctx.fill();
                 }
 
-                //Now draw the points over the line
-                //A little inefficient double looping, but better than the line
-                //lagging behind the point positions
+                // Now draw the points over the line
+                // A little inefficient double looping, but better than the line
+                // lagging behind the point positions
                 helpers.each(pointsWithValues, function(point) {
                     point.draw();
                 });
             }, this);
         }
     });
-
-
 }).call(this);

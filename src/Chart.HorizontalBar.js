@@ -2,47 +2,45 @@
  * https://github.com/tomsouthall/Chart.HorizontalBar.js
  */
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
-
     var defaultConfig = {
-        //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+        // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
         scaleBeginAtZero: true,
 
-        //Boolean - Whether grid lines are shown across the chart
+        // Boolean - Whether grid lines are shown across the chart
         scaleShowGridLines: true,
 
-        //String - Colour of the grid lines
-        scaleGridLineColor: "rgba(0,0,0,.05)",
+        // String - Colour of the grid lines
+        scaleGridLineColor: 'rgba(0,0,0,.05)',
 
-        //Number - Width of the grid lines
+        // Number - Width of the grid lines
         scaleGridLineWidth: 1,
 
-        //Boolean - Whether to show horizontal lines (except X axis)
+        // Boolean - Whether to show horizontal lines (except X axis)
         scaleShowHorizontalLines: true,
 
-        //Boolean - Whether to show vertical lines (except Y axis)
+        // Boolean - Whether to show vertical lines (except Y axis)
         scaleShowVerticalLines: true,
 
-        //Boolean - If there is a stroke on each bar
+        // Boolean - If there is a stroke on each bar
         barShowStroke: true,
 
-        //Number - Pixel width of the bar stroke
+        // Number - Pixel width of the bar stroke
         barStrokeWidth: 2,
 
-        //Number - Spacing between each of the X value sets
+        // Number - Spacing between each of the X value sets
         barValueSpacing: 5,
 
-        //Number - Spacing between data sets within X values
+        // Number - Spacing between data sets within X values
         barDatasetSpacing: 1,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
-
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].fillColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
     };
 
     Chart.HorizontalRectangle = Chart.Element.extend({
@@ -79,46 +77,47 @@
                 ctx.stroke();
             }
         },
+
         inRange: function(chartX, chartY) {
             return (chartX >= this.left && chartX <= this.x && chartY >= (this.y - this.height / 2) && chartY <= (this.y + this.height / 2));
         }
     });
 
     Chart.Type.extend({
-        name: "HorizontalBar",
+        name: 'HorizontalBar',
         defaults: defaultConfig,
-        initialize: function(data) {
 
-            //Expose options as a scope variable here so we can access it in the ScaleClass
+        initialize: function(data) {
             var options = this.options;
 
             this.ScaleClass = Chart.Scale.extend({
                 offsetGridLines: true,
+
                 calculateBarX: function(datasetCount, datasetIndex, barIndex) {
-                    //Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
+                    // Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
                     var xWidth = this.calculateBaseWidth(),
                         xAbsolute = this.calculateX(barIndex) - (xWidth / 2),
                         barWidth = this.calculateBarWidth(datasetCount);
-
                     return xAbsolute + (barWidth * datasetIndex) + (datasetIndex * options.barDatasetSpacing) + barWidth / 2;
                 },
+
                 calculateBaseWidth: function() {
                     return (this.calculateX(1) - this.calculateX(0)) - (2 * options.barValueSpacing);
                 },
-                calculateBarWidth: function(datasetCount) {
-                    //The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-                    var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
 
+                calculateBarWidth: function(datasetCount) {
+                    // The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
+                    var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
                     return (baseWidth / datasetCount);
                 },
 
                 calculateBaseHeight: function() {
                     return ((this.endPoint - this.startPoint) / this.yLabels.length) - (2 * options.barValueSpacing);
                 },
-                calculateBarHeight: function(datasetCount) {
-                    //The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-                    var baseHeight = this.calculateBaseHeight() - ((datasetCount) * options.barDatasetSpacing);
 
+                calculateBarHeight: function(datasetCount) {
+                    // The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
+                    var baseHeight = this.calculateBaseHeight() - ((datasetCount) * options.barDatasetSpacing);
                     return (baseHeight / datasetCount);
                 },
 
@@ -132,17 +131,18 @@
                 },
 
                 calculateBarY: function(datasetCount, datasetIndex, barIndex) {
-                    //Reusable method for calculating the yPosition of a given bar based on datasetIndex & height of the bar
+                    // Reusable method for calculating the yPosition of a given bar based on datasetIndex & height of the bar
                     var yHeight = this.calculateBaseHeight(),
                         yAbsolute = (this.endPoint + this.calculateYInvertXY(barIndex) - (yHeight / 2)) - 5,
                         barHeight = this.calculateBarHeight(datasetCount);
-                    if (datasetCount > 1) yAbsolute = yAbsolute + (barHeight * (datasetIndex - 1)) - (datasetIndex * options.barDatasetSpacing) + barHeight / 2;
+                    if (datasetCount > 1) {
+                        yAbsolute = yAbsolute + (barHeight * (datasetIndex - 1)) - (datasetIndex * options.barDatasetSpacing) + barHeight / 2;
+                    }
                     return yAbsolute;
                 },
 
                 buildCalculatedLabels: function() {
                     this.calculatedLabels = [];
-
                     var stepDecimalPlaces = helpers.getDecimalPlaces(this.stepValue);
 
                     for (var i = 0; i <= this.steps; i++) {
@@ -153,21 +153,20 @@
                 buildYLabels: function() {
                     this.buildYLabelCounter = (typeof this.buildYLabelCounter === 'undefined') ? 0 : this.buildYLabelCounter + 1;
                     this.buildCalculatedLabels();
-                    if (this.buildYLabelCounter === 0) this.yLabels = this.xLabels;
+                    if (this.buildYLabelCounter === 0) {
+                        this.yLabels = this.xLabels;
+                    }
                     this.xLabels = this.calculatedLabels;
                     this.yLabelWidth = (this.display && this.showLabels) ? helpers.longestText(this.ctx, this.font, this.yLabels) : 0;
                 },
 
                 calculateX: function(index) {
-                    var isRotated = (this.xLabelRotation > 0),
-                        innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
+                    var innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
                         valueWidth = innerWidth / (this.steps - ((this.offsetGridLines) ? 0 : 1)),
                         valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
-
                     if (this.offsetGridLines) {
                         valueOffset += (valueWidth / 2);
                     }
-
                     return Math.round(valueOffset);
                 },
 
@@ -185,8 +184,8 @@
 
                             yLabelCenter -= yLabelGap / 2;
 
-                            ctx.textAlign = "right";
-                            ctx.textBaseline = "middle";
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'middle';
                             if (this.showLabels) {
                                 ctx.fillText(labelString, xStart - 10, yLabelCenter);
                             }
@@ -249,10 +248,8 @@
                             ctx.stroke();
                             ctx.closePath();
 
-
                             ctx.lineWidth = this.lineWidth;
                             ctx.strokeStyle = this.lineColor;
-
 
                             // Small lines at the bottom of the base grid line
                             ctx.beginPath();
@@ -265,20 +262,18 @@
                             ctx.translate(xPos, (isRotated) ? this.endPoint + 12 : this.endPoint + 8);
                             ctx.rotate(helpers.radians(this.xLabelRotation) * -1);
                             ctx.font = this.font;
-                            ctx.textAlign = (isRotated) ? "right" : "center";
-                            ctx.textBaseline = (isRotated) ? "middle" : "top";
+                            ctx.textAlign = (isRotated) ? 'right' : 'center';
+                            ctx.textBaseline = (isRotated) ? 'middle' : 'top';
                             ctx.fillText(label, 0, 0);
                             ctx.restore();
                         }, this);
-
                     }
                 }
-
             });
 
             this.datasets = [];
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeBars = (evt.type !== 'mouseout') ? this.getBarsAtEvent(evt) : [];
@@ -294,23 +289,21 @@
                 });
             }
 
-            //Declare the extension of the default point, to cater for the options passed in to the constructor
+            // Declare the extension of the default point, to cater for the options passed in to the constructor
             this.BarClass = Chart.HorizontalRectangle.extend({
                 strokeWidth: this.options.barStrokeWidth,
                 showStroke: this.options.barShowStroke,
                 ctx: this.chart.ctx
             });
 
-            //Iterate through each of the datasets, and build this into a property of the chart
-            helpers.each(data.datasets, function(dataset, datasetIndex) {
-
+            // Iterate through each of the datasets, and build this into a property of the chart
+            helpers.each(data.datasets, function(dataset) {
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
                     strokeColor: dataset.strokeColor,
                     bars: []
                 };
-
                 this.datasets.push(datasetObject);
 
                 helpers.each(dataset.data, function(dataPoint, index) {
@@ -343,6 +336,7 @@
 
             this.render();
         },
+
         update: function() {
             this.scale.update();
             // Reset any highlight colours before updating.
@@ -355,11 +349,13 @@
             });
             this.render();
         },
+
         eachBars: function(callback) {
             helpers.each(this.datasets, function(dataset, datasetIndex) {
                 helpers.each(dataset.bars, callback, this, datasetIndex);
             }, this);
         },
+
         getBarsAtEvent: function(e) {
             var barsArray = [],
                 eventPosition = helpers.getRelativePosition(e),
@@ -379,6 +375,7 @@
 
             return barsArray;
         },
+
         buildScale: function(labels) {
             var self = this;
 
@@ -419,7 +416,7 @@
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
                 showVerticalLines: this.options.scaleShowVerticalLines,
                 gridLineWidth: (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : 'rgba(0,0,0,0)',
                 padding: (this.options.showScale) ? 0 : (this.options.barShowStroke) ? this.options.barStrokeWidth : 0,
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
@@ -437,10 +434,11 @@
 
             this.scale = new this.ScaleClass(scaleOptions);
         },
+
         addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
+            // Map the values array for each of the datasets
             helpers.each(valuesArray, function(value, datasetIndex) {
-                //Add a new point for each piece of data, passing any required data to draw.
+                // Add a new point for each piece of data, passing any required data to draw.
                 this.datasets[datasetIndex].bars.push(new this.BarClass({
                     value: value,
                     label: label,
@@ -454,17 +452,19 @@
             }, this);
 
             this.scale.addXLabel(label);
-            //Then re-render the chart.
+            // Then re-render the chart.
             this.update();
         },
+
         removeData: function() {
             this.scale.removeXLabel();
-            //Then re-render the chart.
+            // Then re-render the chart.
             helpers.each(this.datasets, function(dataset) {
                 dataset.bars.shift();
             }, this);
             this.update();
         },
+
         reflow: function() {
             helpers.extend(this.BarClass.prototype, {
                 y: this.scale.endPoint,
@@ -477,20 +477,19 @@
 
             this.scale.update(newScaleProps);
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
             this.clear();
 
-            var ctx = this.chart.ctx;
-
             this.scale.draw(easingDecimal);
 
-            //Draw all the bars for each dataset
+            // Draw all the bars for each dataset
             helpers.each(this.datasets, function(dataset, datasetIndex) {
                 helpers.each(dataset.bars, function(bar, index) {
                     if (bar.hasValue()) {
                         bar.left = Math.round(this.scale.xScalePaddingLeft);
-                        //Transition then draw
+                        // Transition then draw
                         bar.transition({
                             x: this.scale.calculateXInvertXY(bar.value),
                             y: this.scale.calculateBarY(this.datasets.length, datasetIndex, index),
@@ -498,10 +497,7 @@
                         }, easingDecimal).draw();
                     }
                 }, this);
-
             }, this);
         }
     });
-
-
 }).call(this);

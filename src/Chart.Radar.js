@@ -1,72 +1,69 @@
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
-
-
     Chart.Type.extend({
-        name: "Radar",
+        name: 'Radar',
         defaults: {
-            //Boolean - Whether to show lines for each scale point
+            // Boolean - Whether to show lines for each scale point
             scaleShowLine: true,
 
-            //Boolean - Whether we show the angle lines out of the radar
+            // Boolean - Whether we show the angle lines out of the radar
             angleShowLineOut: true,
 
-            //Boolean - Whether to show labels on the scale
+            // Boolean - Whether to show labels on the scale
             scaleShowLabels: false,
 
             // Boolean - Whether the scale should begin at zero
             scaleBeginAtZero: true,
 
-            //String - Colour of the angle line
-            angleLineColor: "rgba(0,0,0,.1)",
+            // String - Colour of the angle line
+            angleLineColor: 'rgba(0,0,0,.1)',
 
-            //Number - Pixel width of the angle line
+            // Number - Pixel width of the angle line
             angleLineWidth: 1,
 
-            //Number - Interval at which to draw angle lines ("every Nth point")
+            // Number - Interval at which to draw angle lines ("every Nth point")
             angleLineInterval: 1,
 
-            //String - Point label font declaration
-            pointLabelFontFamily: "'Arial'",
+            // String - Point label font declaration
+            pointLabelFontFamily: 'Arial',
 
-            //String - Point label font weight
-            pointLabelFontStyle: "normal",
+            // String - Point label font weight
+            pointLabelFontStyle: 'normal',
 
-            //Number - Point label font size in pixels
+            // Number - Point label font size in pixels
             pointLabelFontSize: 10,
 
-            //String - Point label font colour
-            pointLabelFontColor: "#666",
+            // String - Point label font colour
+            pointLabelFontColor: '#666',
 
-            //Boolean - Whether to show a dot for each point
+            // Boolean - Whether to show a dot for each point
             pointDot: true,
 
-            //Number - Radius of each point dot in pixels
+            // Number - Radius of each point dot in pixels
             pointDotRadius: 3,
 
-            //Number - Pixel width of point dot stroke
+            // Number - Pixel width of point dot stroke
             pointDotStrokeWidth: 1,
 
-            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
             pointHitDetectionRadius: 20,
 
-            //Boolean - Whether to show a stroke for datasets
+            // Boolean - Whether to show a stroke for datasets
             datasetStroke: true,
 
-            //Number - Pixel width of dataset stroke
+            // Number - Pixel width of dataset stroke
             datasetStrokeWidth: 2,
 
-            //Boolean - Whether to fill the dataset with a colour
+            // Boolean - Whether to fill the dataset with a colour
             datasetFill: true,
 
-            //String - A legend template
-            legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].strokeColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
-
+            // String - A legend template
+            legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
         },
 
         initialize: function(data) {
@@ -82,7 +79,7 @@
 
             this.buildScale(data);
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activePointsCollection = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
@@ -99,9 +96,8 @@
                 });
             }
 
-            //Iterate through each of the datasets, and build this into a property of the chart
+            // Iterate through each of the datasets, and build this into a property of the chart
             helpers.each(data.datasets, function(dataset) {
-
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
@@ -114,7 +110,7 @@
                 this.datasets.push(datasetObject);
 
                 helpers.each(dataset.data, function(dataPoint, index) {
-                    //Add a new point for each piece of data, passing any required data to draw.
+                    // Add a new point for each piece of data, passing any required data to draw.
                     var pointPosition;
                     if (!this.scale.animation) {
                         pointPosition = this.scale.getPointPosition(index, this.scale.calculateCenterOffset(dataPoint));
@@ -131,11 +127,11 @@
                         highlightStroke: dataset.pointHighlightStroke || dataset.pointStrokeColor
                     }));
                 }, this);
-
             }, this);
 
             this.render();
         },
+
         eachPoints: function(callback) {
             helpers.each(this.datasets, function(dataset) {
                 helpers.each(dataset.points, callback, this);
@@ -204,14 +200,14 @@
             this.updateScaleRange(data.datasets);
             this.scale.buildYLabels();
         },
+
         updateScaleRange: function(datasets) {
             var valuesArray = (function() {
                 var totalDataArray = [];
                 helpers.each(datasets, function(dataset) {
                     if (dataset.data) {
                         totalDataArray = totalDataArray.concat(dataset.data);
-                    }
-                    else {
+                    } else {
                         helpers.each(dataset.points, function(point) {
                             totalDataArray.push(point.value);
                         });
@@ -219,7 +215,6 @@
                 });
                 return totalDataArray;
             })();
-
 
             var scaleSizes = (this.options.scaleOverride) ?
                 {
@@ -242,8 +237,9 @@
             );
 
         },
+
         addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
+            // Map the values array for each of the datasets
             this.scale.valuesCount++;
             helpers.each(valuesArray, function(value, datasetIndex) {
                 var pointPosition = this.scale.getPointPosition(this.scale.valuesCount, this.scale.calculateCenterOffset(value));
@@ -264,6 +260,7 @@
 
             this.update();
         },
+
         removeData: function() {
             this.scale.valuesCount--;
             this.scale.labels.shift();
@@ -273,6 +270,7 @@
             this.reflow();
             this.update();
         },
+
         update: function() {
             this.eachPoints(function(point) {
                 point.save();
@@ -280,6 +278,7 @@
             this.reflow();
             this.render();
         },
+
         reflow: function() {
             helpers.extend(this.scale, {
                 width: this.chart.width,
@@ -292,6 +291,7 @@
             this.scale.setScaleSize();
             this.scale.buildYLabels();
         },
+
         draw: function(ease) {
             var easeDecimal = ease || 1,
                 ctx = this.chart.ctx;
@@ -299,25 +299,21 @@
             this.scale.draw();
 
             helpers.each(this.datasets, function(dataset) {
-
-                //Transition each point first so that the line and point drawing isn't out of sync
+                // Transition each point first so that the line and point drawing isn't out of sync
                 helpers.each(dataset.points, function(point, index) {
                     if (point.hasValue()) {
                         point.transition(this.scale.getPointPosition(index, this.scale.calculateCenterOffset(point.value)), easeDecimal);
                     }
                 }, this);
 
-
-
-                //Draw the line between all the points
+                // Draw the line between all the points
                 ctx.lineWidth = this.options.datasetStrokeWidth;
                 ctx.strokeStyle = dataset.strokeColor;
                 ctx.beginPath();
                 helpers.each(dataset.points, function(point, index) {
                     if (index === 0) {
                         ctx.moveTo(point.x, point.y);
-                    }
-                    else {
+                    } else {
                         ctx.lineTo(point.x, point.y);
                     }
                 }, this);
@@ -328,23 +324,15 @@
                 if (this.options.datasetFill) {
                     ctx.fill();
                 }
-                //Now draw the points over the line
-                //A little inefficient double looping, but better than the line
-                //lagging behind the point positions
+                // Now draw the points over the line
+                // A little inefficient double looping, but better than the line
+                // lagging behind the point positions
                 helpers.each(dataset.points, function(point) {
                     if (point.hasValue()) {
                         point.draw();
                     }
                 });
-
             }, this);
-
         }
-
     });
-
-
-
-
-
 }).call(this);

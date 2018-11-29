@@ -1,51 +1,47 @@
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
-        //Cache a local reference to Chart.helpers
         helpers = Chart.helpers;
 
     var defaultConfig = {
-        //Boolean - Whether we should show a stroke on each segment
+        // Boolean - Whether we should show a stroke on each segment
         segmentShowStroke: true,
 
-        //String - The colour of each segment stroke
-        segmentStrokeColor: "#fff",
+        // String - The colour of each segment stroke
+        segmentStrokeColor: '#fff',
 
-        //Number - The width of each segment stroke
+        // Number - The width of each segment stroke
         segmentStrokeWidth: 2,
 
-        //The percentage of the chart that we cut out of the middle.
+        // The percentage of the chart that we cut out of the middle.
         percentageInnerCutout: 50,
 
-        //Number - Amount of animation steps
+        // Number - Amount of animation steps
         animationSteps: 100,
 
-        //String - Animation easing effect
-        animationEasing: "easeOutBounce",
+        // String - Animation easing effect
+        animationEasing: 'easeOutBounce',
 
-        //Boolean - Whether we animate the rotation of the Doughnut
+        // Boolean - Whether we animate the rotation of the Doughnut
         animateRotate: true,
 
-        //Boolean - Whether we animate scaling the Doughnut from the centre
+        // Boolean - Whether we animate scaling the Doughnut from the centre
         animateScale: false,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=segments[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
-
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
     };
 
     Chart.Type.extend({
-        //Passing in a name registers this chart in the Chart namespace
-        name: "Doughnut",
-        //Providing a defaults will also register the defaults in the chart namespace
+        // Passing in a name registers this chart in the Chart namespace
+        name: 'Doughnut',
+        // Providing a defaults will also register the defaults in the chart namespace
         defaults: defaultConfig,
-        //Initialize is fired when the chart is initialized - Data is passed in as a parameter
-        //Config is automatically merged by the core of Chart.js, and is available at this.options
-        initialize: function(data) {
 
-            //Declare segments as a static property to prevent inheriting across the Chart type prototype
+        initialize: function(data) {
+            // Declare segments as a static property to prevent inheriting across the Chart type prototype
             this.segments = [];
             this.outerRadius = (helpers.min([this.chart.width, this.chart.height]) - this.options.segmentStrokeWidth / 2) / 2;
 
@@ -55,13 +51,13 @@
                 y: this.chart.height / 2
             });
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
 
                     helpers.each(this.segments, function(segment) {
-                        segment.restore(["fillColor"]);
+                        segment.restore(['fillColor']);
                     });
                     helpers.each(activeSegments, function(activeSegment) {
                         activeSegment.fillColor = activeSegment.highlightColor;
@@ -80,6 +76,7 @@
 
             this.render();
         },
+
         getSegmentsAtEvent: function(e) {
             var segmentsArray = [];
 
@@ -90,9 +87,10 @@
             }, this);
             return segmentsArray;
         },
+
         addData: function(segment, atIndex, silent) {
             var index = atIndex !== undefined ? atIndex : this.segments.length;
-            if (typeof (segment.color) === "undefined") {
+            if (typeof (segment.color) === 'undefined') {
                 segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
                 segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];
             }
@@ -114,6 +112,7 @@
                 this.update();
             }
         },
+
         calculateCircumference: function(value) {
             if (this.total > 0) {
                 return (Math.PI * 2) * (value / this.total);
@@ -121,12 +120,14 @@
                 return 0;
             }
         },
+
         calculateTotal: function(data) {
             this.total = 0;
             helpers.each(data, function(segment) {
                 this.total += Math.abs(segment.value);
             }, this);
         },
+
         update: function() {
             this.calculateTotal(this.segments);
 
@@ -161,6 +162,7 @@
                 });
             }, this);
         },
+
         draw: function(easeDecimal) {
             var animDecimal = (easeDecimal) ? easeDecimal : 1;
             this.clear();
@@ -177,18 +179,16 @@
                 if (index === 0) {
                     segment.startAngle = Math.PI * 1.5;
                 }
-                //Check to see if it's the last segment, if not get the next and update the start angle
+                // Check to see if it's the last segment, if not get the next and update the start angle
                 if (index < this.segments.length - 1) {
                     this.segments[index + 1].startAngle = segment.endAngle;
                 }
             }, this);
-
         }
     });
 
     Chart.types.Doughnut.extend({
-        name: "Pie",
+        name: 'Pie',
         defaults: helpers.merge(defaultConfig, { percentageInnerCutout: 0 })
     });
-
 }).call(this);

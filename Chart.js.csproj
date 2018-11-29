@@ -53,22 +53,24 @@
     <None Include="docs\00-Getting-Started.md" />
     <None Include="docs\01-Line-Chart.md" />
     <None Include="docs\02-Bar-Chart.md" />
-    <None Include="docs\03-Radar-Chart.md" />
-    <None Include="docs\04-Polar-Area-Chart.md" />
-    <None Include="docs\05-Pie-Doughnut-Chart.md" />
-    <None Include="docs\06-Advanced.md" />
-    <None Include="docs\07-Notes.md" />
+    <None Include="docs\03-HorizontalBar-Chart.md" />
+    <None Include="docs\04-Radar-Chart.md" />
+    <None Include="docs\05-Polar-Area-Chart.md" />
+    <None Include="docs\06-Pie-Doughnut-Chart.md" />
+    <None Include="docs\07-Advanced.md" />
+    <None Include="docs\08-Notes.md" />
     <None Include="LICENSE.md" />
     <None Include="package-lock.json" />
     <None Include="package.json" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Chart.min.js" />
+    <Content Include="Chart.js" />
     <Content Include="gulpfile.js" />
     <Content Include="samples\bar.html" />
     <Content Include="samples\doughnut.color.html" />
     <Content Include="samples\doughnut.html" />
+    <Content Include="samples\horizontalBar.html" />
     <Content Include="samples\line-customTooltips.html" />
     <Content Include="samples\line.html" />
     <Content Include="samples\pie-customTooltips.html" />
@@ -78,6 +80,7 @@
     <Content Include="src\Chart.Bar.js" />
     <Content Include="src\Chart.Core.js" />
     <Content Include="src\Chart.Doughnut.js" />
+    <Content Include="src\Chart.HorizontalBar.js" />
     <Content Include="src\Chart.Line.js" />
     <Content Include="src\Chart.PolarArea.js" />
     <Content Include="src\Chart.Radar.js" />

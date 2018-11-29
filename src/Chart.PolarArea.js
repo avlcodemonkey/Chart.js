@@ -1,66 +1,65 @@
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
-        //Cache a local reference to Chart.helpers
         helpers = Chart.helpers;
 
     var defaultConfig = {
-        //Boolean - Show a backdrop to the scale label
+        // Boolean - Show a backdrop to the scale label
         scaleShowLabelBackdrop: true,
 
-        //String - The colour of the label backdrop
-        scaleBackdropColor: "rgba(255,255,255,0.75)",
+        // String - The colour of the label backdrop
+        scaleBackdropColor: 'rgba(255,255,255,0.75)',
 
         // Boolean - Whether the scale should begin at zero
         scaleBeginAtZero: true,
 
-        //Number - The backdrop padding above & below the label in pixels
+        // Number - The backdrop padding above & below the label in pixels
         scaleBackdropPaddingY: 2,
 
-        //Number - The backdrop padding to the side of the label in pixels
+        // Number - The backdrop padding to the side of the label in pixels
         scaleBackdropPaddingX: 2,
 
-        //Boolean - Show line for each value in the scale
+        // Boolean - Show line for each value in the scale
         scaleShowLine: true,
 
-        //Boolean - Stroke a line around each segment in the chart
+        // Boolean - Stroke a line around each segment in the chart
         segmentShowStroke: true,
 
-        //String - The colour of the stroke on each segment.
-        segmentStrokeColor: "#fff",
+        // String - The colour of the stroke on each segment.
+        segmentStrokeColor: '#fff',
 
-        //Number - The width of the stroke value in pixels
+        // Number - The width of the stroke value in pixels
         segmentStrokeWidth: 2,
 
-        //Number - Amount of animation steps
+        // Number - Amount of animation steps
         animationSteps: 100,
 
-        //String - Animation easing effect.
-        animationEasing: "easeOutBounce",
+        // String - Animation easing effect.
+        animationEasing: 'easeOutBounce',
 
-        //Boolean - Whether to animate the rotation of the chart
+        // Boolean - Whether to animate the rotation of the chart
         animateRotate: true,
 
-        //Boolean - Whether to animate scaling the chart from the centre
+        // Boolean - Whether to animate scaling the chart from the centre
         animateScale: false,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=segments[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
     };
 
-
     Chart.Type.extend({
-        //Passing in a name registers this chart in the Chart namespace
-        name: "PolarArea",
-        //Providing a defaults will also register the defaults in the chart namespace
+        // Passing in a name registers this chart in the Chart namespace
+        name: 'PolarArea',
+        // Providing a defaults will also register the defaults in the chart namespace
         defaults: defaultConfig,
-        //Initialize is fired when the chart is initialized - Data is passed in as a parameter
-        //Config is automatically merged by the core of Chart.js, and is available at this.options
+
+        // Initialize is fired when the chart is initialized - Data is passed in as a parameter
+        // Config is automatically merged by the core of Chart.js, and is available at this.options
         initialize: function(data) {
             this.segments = [];
-            //Declare segment class as a chart instance specific class, so it can share props for this instance
+            // Declare segment class as a chart instance specific class, so it can share props for this instance
             this.SegmentArc = Chart.Arc.extend({
                 showStroke: this.options.segmentShowStroke,
                 strokeWidth: this.options.segmentStrokeWidth,
@@ -101,12 +100,12 @@
                 this.addData(segment, index, true);
             }, this);
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
                     helpers.each(this.segments, function(segment) {
-                        segment.restore(["fillColor"]);
+                        segment.restore(['fillColor']);
                     });
                     helpers.each(activeSegments, function(activeSegment) {
                         activeSegment.fillColor = activeSegment.highlightColor;
@@ -117,18 +116,26 @@
 
             this.render();
         },
+
         getSegmentsAtEvent: function(e) {
             var segmentsArray = [];
 
             var location = helpers.getRelativePosition(e);
 
             helpers.each(this.segments, function(segment) {
-                if (segment.inRange(location.x, location.y)) segmentsArray.push(segment);
+                if (segment.inRange(location.x, location.y)) {
+                    segmentsArray.push(segment);
+                }
             }, this);
             return segmentsArray;
         },
+
         addData: function(segment, atIndex, silent) {
             var index = atIndex || this.segments.length;
+            if (typeof (segment.color) === 'undefined') {
+                segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
+                segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];
+            }
 
             this.segments.splice(index, 0, new this.SegmentArc({
                 fillColor: segment.color,
@@ -144,12 +151,14 @@
                 this.update();
             }
         },
+
         removeData: function(atIndex) {
             var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length - 1;
             this.segments.splice(indexToDelete, 1);
             this.reflow();
             this.update();
         },
+
         calculateTotal: function(data) {
             this.total = 0;
             helpers.each(data, function(segment) {
@@ -157,6 +166,7 @@
             }, this);
             this.scale.valuesCount = this.segments.length;
         },
+
         updateScaleRange: function(datapoints) {
             var valuesArray = [];
             helpers.each(datapoints, function(segment) {
@@ -187,8 +197,8 @@
                     yCenter: this.chart.height / 2
                 }
             );
-
         },
+
         update: function() {
             this.calculateTotal(this.segments);
 
@@ -199,6 +209,7 @@
             this.reflow();
             this.render();
         },
+
         reflow: function() {
             helpers.extend(this.SegmentArc.prototype, {
                 x: this.chart.width / 2,
@@ -219,9 +230,10 @@
             }, this);
 
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
-            //Clear & draw the canvas
+            // Clear & draw the canvas
             this.clear();
             helpers.each(this.segments, function(segment, index) {
                 segment.transition({
@@ -231,13 +243,12 @@
 
                 segment.endAngle = segment.startAngle + segment.circumference;
 
-                // If we've removed the first segment we need to set the first one to
-                // start at the top.
+                // If we've removed the first segment we need to set the first one to start at the top.
                 if (index === 0) {
                     segment.startAngle = Math.PI * 1.5;
                 }
 
-                //Check to see if it's the last segment, if not get the next and update the start angle
+                // Check to see if it's the last segment, if not get the next and update the start angle
                 if (index < this.segments.length - 1) {
                     this.segments[index + 1].startAngle = segment.endAngle;
                 }
@@ -246,5 +257,4 @@
             this.scale.draw();
         }
     });
-
 }).call(this);
