@@ -28,6 +28,7 @@
     "main": "Chart.js"
   },
   "dependencies": {
+    "gulp-plumber": "^1.2.1",
     "jshint": "^2.9.6"
   }
 }

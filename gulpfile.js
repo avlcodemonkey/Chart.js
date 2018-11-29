@@ -12,7 +12,9 @@ var gulp = require('gulp'),
     fs = require('fs'),
     package = require('./package.json'),
     bower = require('./bower.json'),
-    livereload = require('gulp-livereload');
+    livereload = require('gulp-livereload'),
+    uglify = require('gulp-uglify'),
+    plumber = require('gulp-plumber');
 
 var srcDir = './src/';
 /*
@@ -37,9 +39,12 @@ gulp.task('build', function() {
     }
 
     return gulp.src(srcFiles)
+        .pipe(plumber())
         .pipe(concat('Chart.js'))
         .pipe(replace('{{ version }}', package.version))
         .pipe(gulp.dest(outputDir))
+        .pipe(uglify())
+        .pipe(concat('Chart.min.js'))
         .pipe(gulp.dest(outputDir));
 
     function FileName(moduleName) {
@@ -103,7 +108,8 @@ gulp.task('library-size', function() {
 
 gulp.task('module-sizes', function() {
     return gulp.src(srcDir + '*.js')
-        //.pipe(uglify({ preserveComments: 'some' }))
+        .pipe(plumber())
+        .pipe(uglify())
         .pipe(size({
             showFiles: true,
             gzip: true
