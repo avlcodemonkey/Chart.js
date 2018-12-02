@@ -1,28 +1,24 @@
-var gulp = require('gulp'),
+var bower = require('./bower.json'),
     concat = require('gulp-concat'),
-    util = require('gulp-util'),
-    jshint = require('gulp-jshint'),
-    size = require('gulp-size'),
-    connect = require('gulp-connect'),
-    replace = require('gulp-replace'),
-    htmlv = require('gulp-html-validator'),
-    inquirer = require('inquirer'),
-    semver = require('semver'),
     exec = require('child_process').exec,
     fs = require('fs'),
+    gulp = require('gulp'),
+    inquirer = require('inquirer'),
+    jshint = require('gulp-jshint'),
     package = require('./package.json'),
-    bower = require('./bower.json'),
-    livereload = require('gulp-livereload'),
+    plumber = require('gulp-plumber'),
+    replace = require('gulp-replace'),
+    semver = require('semver'),
+    size = require('gulp-size'),
     uglify = require('gulp-uglify'),
-    plumber = require('gulp-plumber');
-
+    util = require('gulp-util');
 var srcDir = './src/';
+
 /*
  *    Usage : gulp build --types=Bar,Line,Doughnut
  *    Output: - A built Chart.js file with Core and types Bar, Line and Doughnut concatenated together
  *            - A minified version of this code, in Chart.min.js
  */
-
 gulp.task('build', function() {
 
     // Default to all of the chart types, with Chart.Core first
@@ -31,8 +27,7 @@ gulp.task('build', function() {
         outputDir = (isCustom) ? 'custom' : '.';
     if (isCustom) {
         util.env.types.split(',').forEach(function(type) { return srcFiles.push(FileName(type)); });
-    }
-    else {
+    } else {
         // Seems gulp-concat remove duplicates - nice!
         // So we can use this to sort out dependency order - aka include Core first!
         srcFiles.push(srcDir + '*');
@@ -57,7 +52,6 @@ gulp.task('build', function() {
  *    Prompts: Version increment to bump
  *    Output: - New version number written into package.json & bower.json
  */
-
 gulp.task('bump', function(complete) {
     util.log('Current version:', util.colors.cyan(package.version));
     var choices = ['major', 'premajor', 'minor', 'preminor', 'patch', 'prepatch', 'prerelease'].map(function(versionType) {
@@ -94,11 +88,6 @@ gulp.task('jshint', function() {
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('valid', function() {
-    return gulp.src('samples/*.html')
-        .pipe(htmlv());
-});
-
 gulp.task('library-size', function() {
     return gulp.src('Chart.min.js')
         .pipe(size({
@@ -118,33 +107,10 @@ gulp.task('module-sizes', function() {
 
 gulp.task('watch', function() {
     gulp.watch('./src/*', ['build']);
-
-    livereload.listen(35729);
-
-    var reloadPage = function(evt) {
-        livereload.changed(evt.path);
-    };
-
-    gulp.watch(['Chart.js', 'samples/*'], reloadPage);
-
 });
 
-gulp.task('test', ['jshint', 'valid']);
+gulp.task('test', ['jshint']);
 
 gulp.task('size', ['library-size', 'module-sizes']);
 
 gulp.task('default', ['build', 'watch']);
-
-gulp.task('server', function() {
-    connect.server({
-        port: 8000
-    });
-});
-
-// Convenience task for opening the project straight from the command line
-gulp.task('_open', function() {
-    exec('open http://localhost:8000');
-    exec('subl .');
-});
-
-gulp.task('dev', ['server', 'default']);
