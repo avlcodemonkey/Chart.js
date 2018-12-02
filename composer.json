@@ -1,5 +1,5 @@
 {
-    "name": "nnnick/chartjs",
+    "name": "avlcodemonkey/chartjs",
     "type": "library",
     "description": "Simple HTML5 charts using the canvas element.",
     "keywords": [
@@ -10,8 +10,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "NICK DOWNIE",
-            "email": "hello@nickdownie.com"
+            "name": "Chris Pittman",
+            "email": "cpittman@gmail.com"
         }
     ],
     "require": {
@@ -20,7 +20,7 @@
     "minimum-stability": "stable",
     "extra": {
         "branch-alias": {
-            "release/2.0": "v2.0-dev"
+            "release/1.2.1": "v1x"
         }
     }
 }

@@ -1,4 +1,4 @@
-Contributing to Chart.js
+Contributing to Chart.js v1x
 ========================
 
 Contributions to Chart.js are welcome and encouraged, but please have a look through the guidelines in this document before raising an issue, or writing code for the project.
@@ -7,13 +7,11 @@ Contributions to Chart.js are welcome and encouraged, but please have a look thr
 Using issues
 ------------
 
-The [issue tracker](https://github.com/nnnick/Chart.js/issues) is the preferred channel for reporting bugs, requesting new features and submitting pull requests.
+The [issue tracker](https://github.com/avlcodemonkey/Chart.js/issues) is the preferred channel for reporting bugs, requesting new features and submitting pull requests.
 
-If you're suggesting a new chart type, please take a look at [writing new chart types](https://github.com/nnnick/Chart.js/blob/master/docs/06-Advanced.md#writing-new-chart-types) in the documentation, and some of the [community extensions](https://github.com/nnnick/Chart.js/blob/master/docs/06-Advanced.md#community-extensions) that have been created already.
+If you're suggesting a new chart type, please take a look at [writing new chart types](https://github.com/avlcodemonkey/Chart.js/blob/v1x/docs/07-Advanced.md#writing-new-chart-types) in the documentation, and some of the [community extensions](https://github.com/avlcodemonkey/Chart.js/blob/v1x/docs/07-Advanced.md#community-extensions) that have been created already.
 
 To keep the library lightweight for everyone, it's unlikely we'll add many more chart types to the core of Chart.js, but issues are a good medium to design and spec out how new chart types could work and look.
-
-Please do not use issues for support requests. For help using Chart.js, please take a look at the [`chartjs`](http://stackoverflow.com/questions/tagged/chartjs) tag on Stack Overflow.
 
 
 Reporting bugs
@@ -35,23 +33,19 @@ Pull requests
 
 Clear, concise pull requests are excellent at continuing the project's community driven growth. But please review [these guidelines](https://github.com/blog/1943-how-to-write-the-perfect-pull-request) and the guidelines below before starting work on the project.
 
-Be advised that **Chart.js 1.0.2 is in feature-complete status**. Pull requests adding new features to the 1.x branch will be disregarded.
+Be advised that **Chart.js 2x is a separate project**. Requests related to that version will be disregarded. Instead go to [Chart.js](https://github.com/chartjs/Chart.js).
 
-Guidlines:
+Guidelines:
 
  - Please create an issue first:
-   - For bugs, we can discuss the fixing approach
-   - For enhancements, we can discuss if it is within the project scope and avoid duplicate effort
- - Please make changes to the files in [`/src`](https://github.com/nnnick/Chart.js/tree/master/src), not `Chart.js` or `Chart.min.js` in the repo root directory, this avoids merge conflicts
- - Tabs for indentation, not spaces please
- - If adding new functionality, please also update the relevant `.md` file in [`/docs`](https://github.com/nnnick/Chart.js/tree/master/docs)
- - Please make your commits in logical sections with clear commit messages
-
-Joining the project
--------------
- - Active committers and contributors are invited to introduce yourself and request commit access to this project.  Please send an email to hello@nickdownie.com or file an issue. 
+   - For bugs, we can discuss the fixing approach.
+   - For enhancements, we can discuss if it is within the project scope and avoid duplicate effort.
+ - Please make changes to the files in [`/src`](https://github.com/avlcodemonkey/Chart.js/tree/v1x/src), not `Chart.js` or `Chart.min.js` in the repo root directory, this avoids merge conflicts.
+ - Spaces for indentation, not tabs please.
+ - If adding new functionality, please also update the relevant `.md` file in [`/docs`](https://github.com/avlcodemonkey/Chart.js/tree/v1x/docs).
+ - Please make your commits in logical sections with clear commit messages.
 
 License
 -------
 
-By contributing your code, you agree to license your contribution under the [MIT license](https://github.com/nnnick/Chart.js/blob/master/LICENSE.md).
+By contributing your code, you agree to license your contribution under the [MIT license](https://github.com/avlcodemonkey/Chart.js/blob/v1x/LICENSE.md).
