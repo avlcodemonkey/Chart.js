@@ -33,18 +33,6 @@
         // Number - The width of the stroke value in pixels
         segmentStrokeWidth: 2,
 
-        // Number - Amount of animation steps
-        animationSteps: 100,
-
-        // String - Animation easing effect.
-        animationEasing: 'easeOutBounce',
-
-        // Boolean - Whether to animate the rotation of the chart
-        animateRotate: true,
-
-        // Boolean - Whether to animate scaling the chart from the centre
-        animateScale: false,
-
         // String - A legend template
         legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
     };
@@ -142,8 +130,8 @@
                 highlightColor: segment.highlight || segment.color,
                 label: segment.label,
                 value: segment.value,
-                outerRadius: (this.options.animateScale) ? 0 : this.scale.calculateCenterOffset(segment.value),
-                circumference: (this.options.animateRotate) ? 0 : this.scale.getCircumference(),
+                outerRadius: this.scale.calculateCenterOffset(segment.value),
+                circumference: this.scale.getCircumference(),
                 startAngle: Math.PI * 1.5
             }));
             if (!silent) {

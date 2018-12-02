@@ -151,13 +151,13 @@ This functionality may be useful for implementing DOM based tooltips, or trigger
 
 #### .update( )
 
-Calling `update()` on your Chart instance will re-render the chart with any updated values, allowing you to edit the value of multiple existing points, then render those in one animated render loop.
+Calling `update()` on your Chart instance will re-render the chart with any updated values, allowing you to edit the value of multiple existing points, then render those in one render loop.
 
 ```javascript
 myRadarChart.datasets[0].points[2].value = 50;
 // Would update the first dataset's value of 'Sleeping' to be 50
 myRadarChart.update();
-// Calling update now animates the position of Sleeping from 90 to 50.
+// Calling update now updates the position of Sleeping from 90 to 50.
 ```
 
 #### .addData( valuesArray, label )
@@ -167,7 +167,7 @@ Calling `addData(valuesArray, label)` on your Chart instance passing an array of
 ```javascript
 // The values array passed into addData should be one for each dataset in the chart
 myRadarChart.addData([40, 60], "Dancing");
-// The new data will now animate at the end of the chart.
+// The new data will now display at the end of the chart.
 ```
 
 #### .removeData( )
@@ -176,5 +176,5 @@ Calling `removeData()` on your Chart instance will remove the first value for al
 
 ```javascript
 myRadarChart.removeData();
-// Other points will now animate to their correct positions.
+// Other points will now update to their correct positions.
 ```

@@ -75,17 +75,6 @@ These are the customisation options specific to Pie & Doughnut charts. These opt
 	//Number - The percentage of the chart that we cut out of the middle
 	percentageInnerCutout : 50, // This is 0 for Pie charts
 
-	//Number - Amount of animation steps
-	animationSteps : 100,
-
-	//String - Animation easing effect
-	animationEasing : "easeOutBounce",
-
-	//Boolean - Whether we animate the rotation of the Doughnut
-	animateRotate : true,
-
-	//Boolean - Whether we animate scaling the Doughnut from the centre
-	animateScale : false,
 	{% raw %}
 	//String - A legend template
 	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
@@ -93,16 +82,6 @@ These are the customisation options specific to Pie & Doughnut charts. These opt
 }
 ```
 You can override these for your `Chart` instance by passing a second argument into the `Doughnut` method as an object with the keys you want to override.
-
-For example, we could have a doughnut chart that animates by scaling out from the centre like so:
-
-```javascript
-new Chart(ctx).Doughnut(data, {
-	animateScale: true
-});
-// This will create a chart with all of the default options, merged from the global config,
-// and the Doughnut chart defaults but this particular instance will have `animateScale` set to `true`.
-```
 
 We can also change these default values for each Doughnut type that is created, this object is available at `Chart.defaults.Doughnut`. Pie charts also have a clone of these defaults available to change at `Chart.defaults.Pie`, with the only difference being `percentageInnerCutout` being set to 0.
 
@@ -123,13 +102,13 @@ This functionality may be useful for implementing DOM based tooltips, or trigger
 
 #### .update( )
 
-Calling `update()` on your Chart instance will re-render the chart with any updated values, allowing you to edit the value of multiple existing points, then render those in one animated render loop.
+Calling `update()` on your Chart instance will re-render the chart with any updated values, allowing you to edit the value of multiple existing points, then render those in one render loop.
 
 ```javascript
 myDoughnutChart.segments[1].value = 10;
 // Would update the first dataset's value of 'Green' to be 10
 myDoughnutChart.update();
-// Calling update now animates the circumference of the segment 'Green' from 50 to 10.
+// Calling update now updates the circumference of the segment 'Green' from 50 to 10.
 // and transitions other segment widths
 ```
 
@@ -147,7 +126,7 @@ myDoughnutChart.addData({
 	highlight: "#C69CBE",
 	label: "Purple"
 });
-// The new segment will now animate in.
+// The new segment will now display.
 ```
 
 #### .removeData( index )

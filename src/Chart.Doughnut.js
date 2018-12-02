@@ -18,18 +18,6 @@
         // The percentage of the chart that we cut out of the middle.
         percentageInnerCutout: 50,
 
-        // Number - Amount of animation steps
-        animationSteps: 100,
-
-        // String - Animation easing effect
-        animationEasing: 'easeOutBounce',
-
-        // Boolean - Whether we animate the rotation of the Doughnut
-        animateRotate: true,
-
-        // Boolean - Whether we animate scaling the Doughnut from the centre
-        animateScale: false,
-
         // String - A legend template
         legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
     };
@@ -96,15 +84,15 @@
             }
             this.segments.splice(index, 0, new this.SegmentArc({
                 value: segment.value,
-                outerRadius: (this.options.animateScale) ? 0 : this.outerRadius,
-                innerRadius: (this.options.animateScale) ? 0 : (this.outerRadius / 100) * this.options.percentageInnerCutout,
+                outerRadius: this.outerRadius,
+                innerRadius: (this.outerRadius / 100) * this.options.percentageInnerCutout,
                 fillColor: segment.color,
                 highlightColor: segment.highlight || segment.color,
                 showStroke: this.options.segmentShowStroke,
                 strokeWidth: this.options.segmentStrokeWidth,
                 strokeColor: this.options.segmentStrokeColor,
                 startAngle: Math.PI * 1.5,
-                circumference: (this.options.animateRotate) ? 0 : this.calculateCircumference(segment.value),
+                circumference: this.calculateCircumference(segment.value),
                 label: segment.label
             }));
             if (!silent) {

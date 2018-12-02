@@ -89,17 +89,6 @@ These are the customisation options specific to Polar Area charts. These options
 	//Number - The width of the stroke value in pixels
 	segmentStrokeWidth : 2,
 
-	//Number - Amount of animation steps
-	animationSteps : 100,
-
-	//String - Animation easing effect.
-	animationEasing : "easeOutBounce",
-
-	//Boolean - Whether to animate the rotation of the chart
-	animateRotate : true,
-
-	//Boolean - Whether to animate scaling the chart from the centre
-	animateScale : false,
 	{% raw %}
 	//String - A legend template
 	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
@@ -138,13 +127,13 @@ This functionality may be useful for implementing DOM based tooltips, or trigger
 
 #### .update( )
 
-Calling `update()` on your Chart instance will re-render the chart with any updated values, allowing you to edit the value of multiple existing points, then render those in one animated render loop.
+Calling `update()` on your Chart instance will re-render the chart with any updated values, allowing you to edit the value of multiple existing points, then render those in one render loop.
 
 ```javascript
 myPolarAreaChart.segments[1].value = 10;
 // Would update the first dataset's value of 'Green' to be 10
 myPolarAreaChart.update();
-// Calling update now animates the position of Green from 50 to 10.
+// Calling update now updates the position of Green from 50 to 10.
 ```
 
 #### .addData( segmentData, index )
@@ -159,7 +148,7 @@ myPolarAreaChart.addData({
 	highlight: "#C69CBE",
 	label: "Purple"
 });
-// The new segment will now animate in.
+// The new segment will now display.
 ```
 
 #### .removeData( index )

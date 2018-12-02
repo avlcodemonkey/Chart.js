@@ -1,11 +1,15 @@
 /*!
  * Chart.js
- * http://chartjs.org/
- * Version: 1.1.1
+ * https://github.com/avlcodemonkey/Chart.js
+ * Version: 1.2.1
  *
  * Copyright 2015 Nick Downie
  * Released under the MIT license
  * https://github.com/nnnick/Chart.js/blob/master/LICENSE.md
+ *
+ * Copyright 2018 Chris Pittman
+ * Released under the MIT license
+ * https://github.com/avlcodemonkey/Chart.js/blob/v1x/LICENSE.md
  */
 (function() {
     'use strict';
@@ -23,8 +27,7 @@
         var computeDimension = function(element, dimension) {
             if (element['offset' + dimension]) {
                 return element['offset' + dimension];
-            }
-            else {
+            } else {
                 return document.defaultView.getComputedStyle(element).getPropertyValue(dimension);
             }
         };
@@ -39,18 +42,9 @@
         return this;
     };
 
-    //Globally expose the defaults to allow for user updating/changing
+    // Globally expose the defaults to allow for user updating/changing
     Chart.defaults = {
         global: {
-            // Boolean - Whether to animate the chart
-            animation: true,
-
-            // Number - Number of animation steps
-            animationSteps: 60,
-
-            // String - Animation easing effect
-            animationEasing: "easeOutQuart",
-
             // Boolean - If we should show the scale at all
             showScale: true,
 
@@ -66,7 +60,7 @@
             scaleStartValue: null,
 
             // String - Colour of the scale line
-            scaleLineColor: "rgba(0,0,0,.1)",
+            scaleLineColor: 'rgba(0,0,0,.1)',
 
             // Number - Pixel width of the scale line
             scaleLineWidth: 1,
@@ -78,7 +72,7 @@
             showXLabels: true,
 
             // Interpolated JS string - can access value
-            scaleLabel: "<%=value%>",
+            scaleLabel: '"<%=value%>',
 
             // Boolean - Whether the scale should stick to integers, and not show any floats even if drawing space is there
             scaleIntegersOnly: true,
@@ -93,10 +87,10 @@
             scaleFontSize: 12,
 
             // String - Scale label font weight style
-            scaleFontStyle: "normal",
+            scaleFontStyle: 'normal',
 
             // String - Scale label font colour
-            scaleFontColor: "#666",
+            scaleFontColor: '#666',
 
             // Boolean - whether or not the chart should be responsive and resize when the browser does.
             responsive: true,
@@ -111,10 +105,10 @@
             customTooltips: false,
 
             // Array - Array of string names to attach tooltip events
-            tooltipEvents: ["mousemove", "touchstart", "touchmove", "mouseout"],
+            tooltipEvents: ['mousemove', 'touchstart', 'touchmove', 'mouseout'],
 
             // String - Tooltip background colour
-            tooltipFillColor: "rgba(0,0,0,0.8)",
+            tooltipFillColor: 'rgba(0,0,0,0.8)',
 
             // String - Tooltip label font declaration for the scale label
             tooltipFontFamily: '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -123,10 +117,10 @@
             tooltipFontSize: 12,
 
             // String - Tooltip font weight style
-            tooltipFontStyle: "normal",
+            tooltipFontStyle: 'normal',
 
             // String - Tooltip label font colour
-            tooltipFontColor: "#fff",
+            tooltipFontColor: '#fff',
 
             // String - Tooltip title font declaration for the scale label
             tooltipTitleFontFamily: '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -135,13 +129,13 @@
             tooltipTitleFontSize: 14,
 
             // String - Tooltip title font weight style
-            tooltipTitleFontStyle: "bold",
+            tooltipTitleFontStyle: 'bold',
 
             // String - Tooltip title font colour
-            tooltipTitleFontColor: "#fff",
+            tooltipTitleFontColor: '#fff',
 
             // String - Tooltip title template
-            tooltipTitleTemplate: "<%= label%>",
+            tooltipTitleTemplate: '<%= label%>',
 
             // Number - pixel width of padding around tooltip text
             tooltipYPadding: 6,
@@ -159,53 +153,48 @@
             tooltipXOffset: 10,
 
             // String - Template string for single tooltips
-            tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
+            tooltipTemplate: '<%if (label){%><%=label%>: <%}%><%= value %>',
 
             // String - Template string for single tooltips
-            multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>",
+            multiTooltipTemplate: '<%= datasetLabel %>: <%= value %>',
 
             // String - Colour behind the legend colour block
             multiTooltipKeyBackground: '#fff',
 
             // Array - A list of colors to use as the defaults
-            segmentColorDefault: ["#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A", "#B4B482", "#B15928"],
+            segmentColorDefault: ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#FDBF6F', '#FF7F00', '#CAB2D6', '#6A3D9A', '#B4B482', '#B15928'],
 
             // Array - A list of highlight colors to use as the defaults
-            segmentHighlightColorDefaults: ["#CEF6FF", "#47A0DC", "#DAFFB2", "#5BC854", "#FFC2C1", "#FF4244", "#FFE797", "#FFA728", "#F2DAFE", "#9265C2", "#DCDCAA", "#D98150"],
-
-            // Function - Will fire on animation progression.
-            onAnimationProgress: function() { },
-
-            // Function - Will fire on animation completion.
-            onAnimationComplete: function() { }
-
+            segmentHighlightColorDefaults: ['#CEF6FF', '#47A0DC', '#DAFFB2', '#5BC854', '#FFC2C1', '#FF4244', '#FFE797', '#FFA728', '#F2DAFE', '#9265C2', '#DCDCAA', '#D98150'],
         }
     };
 
-    //Create a dictionary of chart types, to allow for extension of existing types
+    // Create a dictionary of chart types, to allow for extension of existing types
     Chart.types = {};
 
-    //Global Chart helpers object for utility methods and classes
+    // Global Chart helpers object for utility methods and classes
     var helpers = Chart.helpers = {};
 
-    //-- Basic js utility methods
-    var each = helpers.each = function(loopable, callback, self) {
-        var additionalArgs = Array.prototype.slice.call(arguments, 3);
-        // Check to see if null or undefined firstly.
-        if (loopable) {
-            if (loopable.length === +loopable.length) {
-                var i;
-                for (i = 0; i < loopable.length; i++) {
-                    callback.apply(self, [loopable[i], i].concat(additionalArgs));
+    // Basic js utility methods
+    var each =
+        helpers.each = function(loopable, callback, self) {
+            var additionalArgs = Array.prototype.slice.call(arguments, 3);
+            // Check to see if null or undefined firstly.
+            if (loopable) {
+                if (loopable.length === +loopable.length) {
+                    var i;
+                    for (i = 0; i < loopable.length; i++) {
+                        callback.apply(self, [loopable[i], i].concat(additionalArgs));
+                    }
+                }
+                else {
+                    for (var item in loopable) {
+                        callback.apply(self, [loopable[item], item].concat(additionalArgs));
+                    }
                 }
             }
-            else {
-                for (var item in loopable) {
-                    callback.apply(self, [loopable[item], item].concat(additionalArgs));
-                }
-            }
-        }
-    },
+        },
+
         clone = helpers.clone = function(obj) {
             var objClone = {};
             each(obj, function(value, key) {
@@ -215,6 +204,7 @@
             });
             return objClone;
         },
+
         extend = helpers.extend = function(base) {
             each(Array.prototype.slice.call(arguments, 1), function(extensionObject) {
                 each(extensionObject, function(value, key) {
@@ -225,23 +215,14 @@
             });
             return base;
         },
+
         merge = helpers.merge = function(base, master) {
-            //Merge properties in left object over to a shallow clone of object right.
+            // Merge properties in left object over to a shallow clone of object right.
             var args = Array.prototype.slice.call(arguments, 0);
             args.unshift({});
             return extend.apply(null, args);
         },
-        indexOf = helpers.indexOf = function(arrayToSearch, item) {
-            if (Array.prototype.indexOf) {
-                return arrayToSearch.indexOf(item);
-            }
-            else {
-                for (var i = 0; i < arrayToSearch.length; i++) {
-                    if (arrayToSearch[i] === item) return i;
-                }
-                return -1;
-            }
-        },
+
         where = helpers.where = function(collection, filterCallback) {
             var filtered = [];
 
@@ -253,6 +234,7 @@
 
             return filtered;
         },
+
         findNextWhere = helpers.findNextWhere = function(arrayToSearch, filterCallback, startIndex) {
             // Default to start of the array
             if (!startIndex) {
@@ -265,6 +247,7 @@
                 }
             }
         },
+
         findPreviousWhere = helpers.findPreviousWhere = function(arrayToSearch, filterCallback, startIndex) {
             // Default to end of the array
             if (!startIndex) {
@@ -277,10 +260,11 @@
                 }
             }
         },
+
         inherits = helpers.inherits = function(extensions) {
-            //Basic javascript inheritance based on the model created in Backbone.js
+            // Basic javascript inheritance based on the model created in Backbone.js
             var parent = this;
-            var ChartElement = (extensions && extensions.hasOwnProperty("constructor")) ? extensions.constructor : function() { return parent.apply(this, arguments); };
+            var ChartElement = (extensions && extensions.hasOwnProperty('constructor')) ? extensions.constructor : function() { return parent.apply(this, arguments); };
 
             var Surrogate = function() { this.constructor = ChartElement; };
             Surrogate.prototype = parent.prototype;
@@ -294,18 +278,16 @@
 
             return ChartElement;
         },
+
         noop = helpers.noop = function() { },
+
         uid = helpers.uid = (function() {
             var id = 0;
             return function() {
-                return "chart-" + id++;
+                return 'chart-' + id++;
             };
         })(),
-        warn = helpers.warn = function(str) {
-            //Method for warning of errors
-            if (window.console && typeof window.console.warn === "function") console.warn(str);
-        },
-        amd = helpers.amd = (typeof define === 'function' && define.amd),
+
         //-- Math methods
         isNumber = helpers.isNumber = function(n) {
             return !isNaN(parseFloat(n)) && isFinite(n);
@@ -313,36 +295,25 @@
         max = helpers.max = function(array) {
             return Math.max.apply(Math, array);
         },
+
         min = helpers.min = function(array) {
             return Math.min.apply(Math, array);
         },
-        cap = helpers.cap = function(valueToCap, maxValue, minValue) {
-            if (isNumber(maxValue)) {
-                if (valueToCap > maxValue) {
-                    return maxValue;
-                }
-            }
-            else if (isNumber(minValue)) {
-                if (valueToCap < minValue) {
-                    return minValue;
-                }
-            }
-            return valueToCap;
-        },
+
         getDecimalPlaces = helpers.getDecimalPlaces = function(num) {
             if (num % 1 !== 0 && isNumber(num)) {
                 var s = num.toString();
-                if (s.indexOf("e-") < 0) {
+                if (s.indexOf('e-') < 0) {
                     // no exponent, e.g. 0.01
-                    return s.split(".")[1].length;
+                    return s.split('.')[1].length;
                 }
-                else if (s.indexOf(".") < 0) {
+                else if (s.indexOf('.') < 0) {
                     // no decimal point, e.g. 1e-9
-                    return parseInt(s.split("e-")[1]);
+                    return parseInt(s.split('e-')[1]);
                 }
                 else {
                     // exponent and decimal point, e.g. 1.23e-9
-                    var parts = s.split(".")[1].split("e-");
+                    var parts = s.split('.')[1].split('e-');
                     return parts[0].length + parseInt(parts[1]);
                 }
             }
@@ -350,6 +321,7 @@
                 return 0;
             }
         },
+
         toRadians = helpers.radians = function(degrees) {
             return degrees * (Math.PI / 180);
         },
@@ -533,246 +505,6 @@
             }
             return labelsArray;
         },
-        //--Animation methods
-        //Easing functions adapted from Robert Penner's easing equations
-        //http://www.robertpenner.com/easing/
-        easingEffects = helpers.easingEffects = {
-            linear: function(t) {
-                return t;
-            },
-            easeInQuad: function(t) {
-                return t * t;
-            },
-            easeOutQuad: function(t) {
-                return -1 * t * (t - 2);
-            },
-            easeInOutQuad: function(t) {
-                if ((t /= 1 / 2) < 1) {
-                    return 1 / 2 * t * t;
-                }
-                return -1 / 2 * ((--t) * (t - 2) - 1);
-            },
-            easeInCubic: function(t) {
-                return t * t * t;
-            },
-            easeOutCubic: function(t) {
-                return 1 * ((t = t / 1 - 1) * t * t + 1);
-            },
-            easeInOutCubic: function(t) {
-                if ((t /= 1 / 2) < 1) {
-                    return 1 / 2 * t * t * t;
-                }
-                return 1 / 2 * ((t -= 2) * t * t + 2);
-            },
-            easeInQuart: function(t) {
-                return t * t * t * t;
-            },
-            easeOutQuart: function(t) {
-                return -1 * ((t = t / 1 - 1) * t * t * t - 1);
-            },
-            easeInOutQuart: function(t) {
-                if ((t /= 1 / 2) < 1) {
-                    return 1 / 2 * t * t * t * t;
-                }
-                return -1 / 2 * ((t -= 2) * t * t * t - 2);
-            },
-            easeInQuint: function(t) {
-                return 1 * (t /= 1) * t * t * t * t;
-            },
-            easeOutQuint: function(t) {
-                return 1 * ((t = t / 1 - 1) * t * t * t * t + 1);
-            },
-            easeInOutQuint: function(t) {
-                if ((t /= 1 / 2) < 1) {
-                    return 1 / 2 * t * t * t * t * t;
-                }
-                return 1 / 2 * ((t -= 2) * t * t * t * t + 2);
-            },
-            easeInSine: function(t) {
-                return -1 * Math.cos(t / 1 * (Math.PI / 2)) + 1;
-            },
-            easeOutSine: function(t) {
-                return 1 * Math.sin(t / 1 * (Math.PI / 2));
-            },
-            easeInOutSine: function(t) {
-                return -1 / 2 * (Math.cos(Math.PI * t / 1) - 1);
-            },
-            easeInExpo: function(t) {
-                return (t === 0) ? 1 : 1 * Math.pow(2, 10 * (t / 1 - 1));
-            },
-            easeOutExpo: function(t) {
-                return (t === 1) ? 1 : 1 * (-Math.pow(2, -10 * t / 1) + 1);
-            },
-            easeInOutExpo: function(t) {
-                if (t === 0) {
-                    return 0;
-                }
-                if (t === 1) {
-                    return 1;
-                }
-                if ((t /= 1 / 2) < 1) {
-                    return 1 / 2 * Math.pow(2, 10 * (t - 1));
-                }
-                return 1 / 2 * (-Math.pow(2, -10 * --t) + 2);
-            },
-            easeInCirc: function(t) {
-                if (t >= 1) {
-                    return t;
-                }
-                return -1 * (Math.sqrt(1 - (t /= 1) * t) - 1);
-            },
-            easeOutCirc: function(t) {
-                return 1 * Math.sqrt(1 - (t = t / 1 - 1) * t);
-            },
-            easeInOutCirc: function(t) {
-                if ((t /= 1 / 2) < 1) {
-                    return -1 / 2 * (Math.sqrt(1 - t * t) - 1);
-                }
-                return 1 / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1);
-            },
-            easeInElastic: function(t) {
-                var s = 1.70158;
-                var p = 0;
-                var a = 1;
-                if (t === 0) {
-                    return 0;
-                }
-                if ((t /= 1) == 1) {
-                    return 1;
-                }
-                if (!p) {
-                    p = 1 * 0.3;
-                }
-                if (a < Math.abs(1)) {
-                    a = 1;
-                    s = p / 4;
-                } else {
-                    s = p / (2 * Math.PI) * Math.asin(1 / a);
-                }
-                return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
-            },
-            easeOutElastic: function(t) {
-                var s = 1.70158;
-                var p = 0;
-                var a = 1;
-                if (t === 0) {
-                    return 0;
-                }
-                if ((t /= 1) == 1) {
-                    return 1;
-                }
-                if (!p) {
-                    p = 1 * 0.3;
-                }
-                if (a < Math.abs(1)) {
-                    a = 1;
-                    s = p / 4;
-                } else {
-                    s = p / (2 * Math.PI) * Math.asin(1 / a);
-                }
-                return a * Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) + 1;
-            },
-            easeInOutElastic: function(t) {
-                var s = 1.70158;
-                var p = 0;
-                var a = 1;
-                if (t === 0) {
-                    return 0;
-                }
-                if ((t /= 1 / 2) == 2) {
-                    return 1;
-                }
-                if (!p) {
-                    p = 1 * (0.3 * 1.5);
-                }
-                if (a < Math.abs(1)) {
-                    a = 1;
-                    s = p / 4;
-                } else {
-                    s = p / (2 * Math.PI) * Math.asin(1 / a);
-                }
-                if (t < 1) {
-                    return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
-                }
-                return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) * 0.5 + 1;
-            },
-            easeInBack: function(t) {
-                var s = 1.70158;
-                return 1 * (t /= 1) * t * ((s + 1) * t - s);
-            },
-            easeOutBack: function(t) {
-                var s = 1.70158;
-                return 1 * ((t = t / 1 - 1) * t * ((s + 1) * t + s) + 1);
-            },
-            easeInOutBack: function(t) {
-                var s = 1.70158;
-                if ((t /= 1 / 2) < 1) {
-                    return 1 / 2 * (t * t * (((s *= (1.525)) + 1) * t - s));
-                }
-                return 1 / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
-            },
-            easeInBounce: function(t) {
-                return 1 - easingEffects.easeOutBounce(1 - t);
-            },
-            easeOutBounce: function(t) {
-                if ((t /= 1) < (1 / 2.75)) {
-                    return 1 * (7.5625 * t * t);
-                } else if (t < (2 / 2.75)) {
-                    return 1 * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75);
-                } else if (t < (2.5 / 2.75)) {
-                    return 1 * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375);
-                } else {
-                    return 1 * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375);
-                }
-            },
-            easeInOutBounce: function(t) {
-                if (t < 1 / 2) {
-                    return easingEffects.easeInBounce(t * 2) * 0.5;
-                }
-                return easingEffects.easeOutBounce(t * 2 - 1) * 0.5 + 1 * 0.5;
-            }
-        },
-        //Request animation polyfill - http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
-        requestAnimFrame = helpers.requestAnimFrame = (function() {
-            return window.requestAnimationFrame ||
-                window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                window.oRequestAnimationFrame ||
-                window.msRequestAnimationFrame ||
-                function(callback) {
-                    return window.setTimeout(callback, 1000 / 60);
-                };
-        })(),
-        cancelAnimFrame = helpers.cancelAnimFrame = (function() {
-            return window.cancelAnimationFrame ||
-                window.webkitCancelAnimationFrame ||
-                window.mozCancelAnimationFrame ||
-                window.oCancelAnimationFrame ||
-                window.msCancelAnimationFrame ||
-                function(callback) {
-                    return window.clearTimeout(callback, 1000 / 60);
-                };
-        })(),
-        animationLoop = helpers.animationLoop = function(callback, totalSteps, easingString, onProgress, onComplete, chartInstance) {
-
-            var currentStep = 0,
-                easingFunction = easingEffects[easingString] || easingEffects.linear;
-
-            var animationFrame = function() {
-                currentStep++;
-                var stepDecimal = currentStep / totalSteps;
-                var easeDecimal = easingFunction(stepDecimal);
-
-                callback.call(chartInstance, easeDecimal, stepDecimal, currentStep);
-                onProgress.call(chartInstance, easeDecimal, stepDecimal);
-                if (currentStep < totalSteps) {
-                    chartInstance.animationFrame = requestAnimFrame(animationFrame);
-                } else {
-                    onComplete.apply(chartInstance);
-                }
-            };
-            requestAnimFrame(animationFrame);
-        },
         //-- DOM methods
         getRelativePosition = helpers.getRelativePosition = function(evt) {
             var mouseX, mouseY;
@@ -918,13 +650,7 @@
             clear(this.chart);
             return this;
         },
-        stop: function() {
-            // Stops any current animation loop occuring
-            Chart.animationService.cancelAnimation(this);
-            return this;
-        },
         resize: function(callback) {
-            this.stop();
             var canvas = this.chart.canvas,
                 newWidth = getMaximumWidth(this.chart.canvas),
                 newHeight = this.options.maintainAspectRatio ? newWidth / this.chart.aspectRatio : getMaximumHeight(this.chart.canvas);
@@ -944,38 +670,13 @@
             if (reflow) {
                 this.reflow();
             }
-
-            if (this.options.animation && !reflow) {
-                var animation = new Chart.Animation();
-                animation.numSteps = this.options.animationSteps;
-                animation.easing = this.options.animationEasing;
-
-                // render function
-                animation.render = function(chartInstance, animationObject) {
-                    var easingFunction = helpers.easingEffects[animationObject.easing];
-                    var stepDecimal = animationObject.currentStep / animationObject.numSteps;
-                    var easeDecimal = easingFunction(stepDecimal);
-
-                    chartInstance.draw(easeDecimal, stepDecimal, animationObject.currentStep);
-                };
-
-                // user events
-                animation.onAnimationProgress = this.options.onAnimationProgress;
-                animation.onAnimationComplete = this.options.onAnimationComplete;
-
-                Chart.animationService.addAnimation(this, animation);
-            }
-            else {
-                this.draw();
-                this.options.onAnimationComplete.call(this);
-            }
+            this.draw();
             return this;
         },
         generateLegend: function() {
             return helpers.template(this.options.legendTemplate, this);
         },
         destroy: function() {
-            this.stop();
             this.clear();
             unbindEvents(this, this.events);
             var canvas = this.chart.canvas;
@@ -1033,7 +734,7 @@
 
                     for (var i = this.datasets.length - 1; i >= 0; i--) {
                         dataArray = this.datasets[i].points || this.datasets[i].bars || this.datasets[i].segments;
-                        dataIndex = indexOf(dataArray, ChartElements[0]);
+                        dataIndex = dataArray.indexOf(ChartElements[0]);
                         if (dataIndex !== -1) {
                             break;
                         }
@@ -1174,7 +875,7 @@
                 return new ChartType(data, config, this);
             };
         } else {
-            warn("Name not provided for this chart, so it hasn't been registered");
+            window.console.warn("Name not provided for this chart, so it hasn't been registered");
         }
         return parent;
     };
@@ -1311,10 +1012,7 @@
                 y: this.y + (Math.sin(centreAngle) * rangeFromCentre)
             };
         },
-        draw: function(animationPercent) {
-
-            var easingDecimal = animationPercent || 1;
-
+        draw: function() {
             var ctx = this.ctx;
 
             ctx.beginPath();
@@ -1378,16 +1076,6 @@
         inRange: function(chartX, chartY) {
             return (chartX >= this.x - this.width / 2 && chartX <= this.x + this.width / 2) && (chartY >= this.y && chartY <= this.base);
         }
-    });
-
-    Chart.Animation = Chart.Element.extend({
-        currentStep: null, // the current animation step
-        numSteps: 60, // default number of steps
-        easing: "", // the easing to use for this animation
-        render: null, // render function used by the animation service
-
-        onAnimationProgress: null, // user specified callback to fire on each step of the animation 
-        onAnimationComplete: null, // user specified callback to fire when the animation finishes
     });
 
     Chart.Tooltip = Chart.Element.extend({
@@ -2126,92 +1814,6 @@
         }
     });
 
-    Chart.animationService = {
-        frameDuration: 17,
-        animations: [],
-        dropFrames: 0,
-        addAnimation: function(chartInstance, animationObject) {
-            for (var index = 0; index < this.animations.length; ++index) {
-                if (this.animations[index].chartInstance === chartInstance) {
-                    // replacing an in progress animation
-                    this.animations[index].animationObject = animationObject;
-                    return;
-                }
-            }
-
-            this.animations.push({
-                chartInstance: chartInstance,
-                animationObject: animationObject
-            });
-
-            // If there are no animations queued, manually kickstart a digest, for lack of a better word
-            if (this.animations.length == 1) {
-                helpers.requestAnimFrame.call(window, this.digestWrapper);
-            }
-        },
-        // Cancel the animation for a given chart instance
-        cancelAnimation: function(chartInstance) {
-            var index = helpers.findNextWhere(this.animations, function(animationWrapper) {
-                return animationWrapper.chartInstance === chartInstance;
-            });
-
-            if (index) {
-                this.animations.splice(index, 1);
-            }
-        },
-        // calls startDigest with the proper context
-        digestWrapper: function() {
-            Chart.animationService.startDigest.call(Chart.animationService);
-        },
-        startDigest: function() {
-
-            var startTime = Date.now();
-            var framesToDrop = 0;
-
-            if (this.dropFrames > 1) {
-                framesToDrop = Math.floor(this.dropFrames);
-                this.dropFrames -= framesToDrop;
-            }
-
-            for (var i = 0; i < this.animations.length; i++) {
-
-                if (this.animations[i].animationObject.currentStep === null) {
-                    this.animations[i].animationObject.currentStep = 0;
-                }
-
-                this.animations[i].animationObject.currentStep += 1 + framesToDrop;
-                if (this.animations[i].animationObject.currentStep > this.animations[i].animationObject.numSteps) {
-                    this.animations[i].animationObject.currentStep = this.animations[i].animationObject.numSteps;
-                }
-
-                this.animations[i].animationObject.render(this.animations[i].chartInstance, this.animations[i].animationObject);
-
-                // Check if executed the last frame.
-                if (this.animations[i].animationObject.currentStep == this.animations[i].animationObject.numSteps) {
-                    // Call onAnimationComplete
-                    this.animations[i].animationObject.onAnimationComplete.call(this.animations[i].chartInstance);
-                    // Remove the animation.
-                    this.animations.splice(i, 1);
-                    // Keep the index in place to offset the splice
-                    i--;
-                }
-            }
-
-            var endTime = Date.now();
-            var delay = endTime - startTime - this.frameDuration;
-            var frameDelay = delay / this.frameDuration;
-
-            if (frameDelay > 1) {
-                this.dropFrames += frameDelay;
-            }
-
-            // Do we have more stuff to animate?
-            if (this.animations.length > 0) {
-                helpers.requestAnimFrame.call(window, this.digestWrapper);
-            }
-        }
-    };
-
     // Attach global event to resize each chart instance when the browser resizes
     helpers.addEvent(window, "resize", (function() {
         // Basic debounce of resize function so it doesn't hurt performance when resizing browser.
@@ -2231,7 +1833,7 @@
     })());
 
 
-    if (amd) {
+    if (typeof define === 'function' && define.amd) {
         define('Chart', [], function() {
             return Chart;
         });
@@ -2249,62 +1851,59 @@
 }).call(this);
 
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
-
     var defaultConfig = {
-        //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+        // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
         scaleBeginAtZero: true,
 
-        //Boolean - Whether grid lines are shown across the chart
+        // Boolean - Whether grid lines are shown across the chart
         scaleShowGridLines: true,
 
-        //String - Colour of the grid lines
-        scaleGridLineColor: "rgba(0,0,0,.05)",
+        // String - Colour of the grid lines
+        scaleGridLineColor: 'rgba(0,0,0,.05)',
 
-        //Number - Width of the grid lines
+        // Number - Width of the grid lines
         scaleGridLineWidth: 1,
 
-        //Boolean - Whether to show horizontal lines (except X axis)
+        // Boolean - Whether to show horizontal lines (except X axis)
         scaleShowHorizontalLines: true,
 
-        //Boolean - Whether to show vertical lines (except Y axis)
+        // Boolean - Whether to show vertical lines (except Y axis)
         scaleShowVerticalLines: true,
 
-        //Boolean - If there is a stroke on each bar
+        // Boolean - If there is a stroke on each bar
         barShowStroke: true,
 
-        //Number - Pixel width of the bar stroke
+        // Number - Pixel width of the bar stroke
         barStrokeWidth: 2,
 
-        //Number - Spacing between each of the X value sets
+        // Number - Spacing between each of the X value sets
         barValueSpacing: 5,
 
-        //Number - Spacing between data sets within X values
+        // Number - Spacing between data sets within X values
         barDatasetSpacing: 1,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
-
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].fillColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
     };
 
-
     Chart.Type.extend({
-        name: "Bar",
+        name: 'Bar',
         defaults: defaultConfig,
-        initialize: function(data) {
 
-            //Expose options as a scope variable here so we can access it in the ScaleClass
+        initialize: function(data) {
+            // Expose options as a scope variable here so we can access it in the ScaleClass
             var options = this.options;
 
             this.ScaleClass = Chart.Scale.extend({
                 offsetGridLines: true,
                 calculateBarX: function(datasetCount, datasetIndex, barIndex) {
-                    //Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
+                    // Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
                     var xWidth = this.calculateBaseWidth(),
                         xAbsolute = this.calculateX(barIndex) - (xWidth / 2),
                         barWidth = this.calculateBarWidth(datasetCount);
@@ -2315,7 +1914,7 @@
                     return (this.calculateX(1) - this.calculateX(0)) - (2 * options.barValueSpacing);
                 },
                 calculateBarWidth: function(datasetCount) {
-                    //The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
+                    // The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
                     var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
 
                     return (baseWidth / datasetCount);
@@ -2324,7 +1923,7 @@
 
             this.datasets = [];
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeBars = (evt.type !== 'mouseout') ? this.getBarsAtEvent(evt) : [];
@@ -2342,16 +1941,15 @@
                 });
             }
 
-            //Declare the extension of the default point, to cater for the options passed in to the constructor
+            // Declare the extension of the default point, to cater for the options passed in to the constructor
             this.BarClass = Chart.Rectangle.extend({
                 strokeWidth: this.options.barStrokeWidth,
                 showStroke: this.options.barShowStroke,
                 ctx: this.chart.ctx
             });
 
-            //Iterate through each of the datasets, and build this into a property of the chart
-            helpers.each(data.datasets, function(dataset, datasetIndex) {
-
+            // Iterate through each of the datasets, and build this into a property of the chart
+            helpers.each(data.datasets, function(dataset) {
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
@@ -2362,18 +1960,17 @@
                 this.datasets.push(datasetObject);
 
                 helpers.each(dataset.data, function(dataPoint, index) {
-                    //Add a new point for each piece of data, passing any required data to draw.
+                    // Add a new point for each piece of data, passing any required data to draw.
                     datasetObject.bars.push(new this.BarClass({
                         value: dataPoint,
                         label: data.labels[index],
                         datasetLabel: dataset.label,
-                        strokeColor: (typeof dataset.strokeColor == 'object') ? dataset.strokeColor[index] : dataset.strokeColor,
-                        fillColor: (typeof dataset.fillColor == 'object') ? dataset.fillColor[index] : dataset.fillColor,
-                        highlightFill: (dataset.highlightFill) ? (typeof dataset.highlightFill == 'object') ? dataset.highlightFill[index] : dataset.highlightFill : (typeof dataset.fillColor == 'object') ? dataset.fillColor[index] : dataset.fillColor,
-                        highlightStroke: (dataset.highlightStroke) ? (typeof dataset.highlightStroke == 'object') ? dataset.highlightStroke[index] : dataset.highlightStroke : (typeof dataset.strokeColor == 'object') ? dataset.strokeColor[index] : dataset.strokeColor
+                        strokeColor: (typeof dataset.strokeColor === 'object') ? dataset.strokeColor[index] : dataset.strokeColor,
+                        fillColor: (typeof dataset.fillColor === 'object') ? dataset.fillColor[index] : dataset.fillColor,
+                        highlightFill: (dataset.highlightFill) ? (typeof dataset.highlightFill === 'object') ? dataset.highlightFill[index] : dataset.highlightFill : (typeof dataset.fillColor === 'object') ? dataset.fillColor[index] : dataset.fillColor,
+                        highlightStroke: (dataset.highlightStroke) ? (typeof dataset.highlightStroke === 'object') ? dataset.highlightStroke[index] : dataset.highlightStroke : (typeof dataset.strokeColor === 'object') ? dataset.strokeColor[index] : dataset.strokeColor
                     }));
                 }, this);
-
             }, this);
 
             this.buildScale(data.labels);
@@ -2391,6 +1988,7 @@
 
             this.render();
         },
+
         update: function() {
             this.scale.update();
             // Reset any highlight colours before updating.
@@ -2403,11 +2001,13 @@
             });
             this.render();
         },
+
         eachBars: function(callback) {
             helpers.each(this.datasets, function(dataset, datasetIndex) {
                 helpers.each(dataset.bars, callback, this, datasetIndex);
             }, this);
         },
+
         getBarsAtEvent: function(e) {
             var barsArray = [],
                 eventPosition = helpers.getRelativePosition(e),
@@ -2427,6 +2027,7 @@
 
             return barsArray;
         },
+
         buildScale: function(labels) {
             var self = this;
 
@@ -2468,7 +2069,7 @@
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
                 showVerticalLines: this.options.scaleShowVerticalLines,
                 gridLineWidth: (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : 'rgba(0,0,0,0)',
                 padding: (this.options.showScale) ? 0 : (this.options.barShowStroke) ? this.options.barStrokeWidth : 0,
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
@@ -2486,10 +2087,11 @@
 
             this.scale = new this.ScaleClass(scaleOptions);
         },
+
         addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
+            // Map the values array for each of the datasets
             helpers.each(valuesArray, function(value, datasetIndex) {
-                //Add a new point for each piece of data, passing any required data to draw.
+                // Add a new point for each piece of data, passing any required data to draw.
                 this.datasets[datasetIndex].bars.push(new this.BarClass({
                     value: value,
                     label: label,
@@ -2504,17 +2106,19 @@
             }, this);
 
             this.scale.addXLabel(label);
-            //Then re-render the chart.
+            // Then re-render the chart.
             this.update();
         },
+
         removeData: function() {
             this.scale.removeXLabel();
-            //Then re-render the chart.
+            // Then re-render the chart.
             helpers.each(this.datasets, function(dataset) {
                 dataset.bars.shift();
             }, this);
             this.update();
         },
+
         reflow: function() {
             helpers.extend(this.BarClass.prototype, {
                 y: this.scale.endPoint,
@@ -2526,20 +2130,19 @@
             });
             this.scale.update(newScaleProps);
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
             this.clear();
 
-            var ctx = this.chart.ctx;
-
             this.scale.draw(easingDecimal);
 
-            //Draw all the bars for each dataset
+            // Draw all the bars for each dataset
             helpers.each(this.datasets, function(dataset, datasetIndex) {
                 helpers.each(dataset.bars, function(bar, index) {
                     if (bar.hasValue()) {
                         bar.base = this.scale.endPoint;
-                        //Transition then draw
+                        // Transition then draw
                         bar.transition({
                             x: this.scale.calculateBarX(this.datasets.length, datasetIndex, index),
                             y: this.scale.calculateY(bar.value),
@@ -2547,62 +2150,43 @@
                         }, easingDecimal).draw();
                     }
                 }, this);
-
             }, this);
         }
     });
-
-
 }).call(this);
 
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
-        //Cache a local reference to Chart.helpers
         helpers = Chart.helpers;
 
     var defaultConfig = {
-        //Boolean - Whether we should show a stroke on each segment
+        // Boolean - Whether we should show a stroke on each segment
         segmentShowStroke: true,
 
-        //String - The colour of each segment stroke
-        segmentStrokeColor: "#fff",
+        // String - The colour of each segment stroke
+        segmentStrokeColor: '#fff',
 
-        //Number - The width of each segment stroke
+        // Number - The width of each segment stroke
         segmentStrokeWidth: 2,
 
-        //The percentage of the chart that we cut out of the middle.
+        // The percentage of the chart that we cut out of the middle.
         percentageInnerCutout: 50,
 
-        //Number - Amount of animation steps
-        animationSteps: 100,
-
-        //String - Animation easing effect
-        animationEasing: "easeOutBounce",
-
-        //Boolean - Whether we animate the rotation of the Doughnut
-        animateRotate: true,
-
-        //Boolean - Whether we animate scaling the Doughnut from the centre
-        animateScale: false,
-
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=segments[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
-
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
     };
 
     Chart.Type.extend({
-        //Passing in a name registers this chart in the Chart namespace
-        name: "Doughnut",
-        //Providing a defaults will also register the defaults in the chart namespace
+        // Passing in a name registers this chart in the Chart namespace
+        name: 'Doughnut',
+        // Providing a defaults will also register the defaults in the chart namespace
         defaults: defaultConfig,
-        //Initialize is fired when the chart is initialized - Data is passed in as a parameter
-        //Config is automatically merged by the core of Chart.js, and is available at this.options
-        initialize: function(data) {
 
-            //Declare segments as a static property to prevent inheriting across the Chart type prototype
+        initialize: function(data) {
+            // Declare segments as a static property to prevent inheriting across the Chart type prototype
             this.segments = [];
             this.outerRadius = (helpers.min([this.chart.width, this.chart.height]) - this.options.segmentStrokeWidth / 2) / 2;
 
@@ -2612,13 +2196,13 @@
                 y: this.chart.height / 2
             });
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
 
                     helpers.each(this.segments, function(segment) {
-                        segment.restore(["fillColor"]);
+                        segment.restore(['fillColor']);
                     });
                     helpers.each(activeSegments, function(activeSegment) {
                         activeSegment.fillColor = activeSegment.highlightColor;
@@ -2637,6 +2221,7 @@
 
             this.render();
         },
+
         getSegmentsAtEvent: function(e) {
             var segmentsArray = [];
 
@@ -2647,23 +2232,24 @@
             }, this);
             return segmentsArray;
         },
+
         addData: function(segment, atIndex, silent) {
             var index = atIndex !== undefined ? atIndex : this.segments.length;
-            if (typeof (segment.color) === "undefined") {
+            if (typeof (segment.color) === 'undefined') {
                 segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
                 segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];
             }
             this.segments.splice(index, 0, new this.SegmentArc({
                 value: segment.value,
-                outerRadius: (this.options.animateScale) ? 0 : this.outerRadius,
-                innerRadius: (this.options.animateScale) ? 0 : (this.outerRadius / 100) * this.options.percentageInnerCutout,
+                outerRadius: this.outerRadius,
+                innerRadius: (this.outerRadius / 100) * this.options.percentageInnerCutout,
                 fillColor: segment.color,
                 highlightColor: segment.highlight || segment.color,
                 showStroke: this.options.segmentShowStroke,
                 strokeWidth: this.options.segmentStrokeWidth,
                 strokeColor: this.options.segmentStrokeColor,
                 startAngle: Math.PI * 1.5,
-                circumference: (this.options.animateRotate) ? 0 : this.calculateCircumference(segment.value),
+                circumference: this.calculateCircumference(segment.value),
                 label: segment.label
             }));
             if (!silent) {
@@ -2671,6 +2257,7 @@
                 this.update();
             }
         },
+
         calculateCircumference: function(value) {
             if (this.total > 0) {
                 return (Math.PI * 2) * (value / this.total);
@@ -2678,12 +2265,14 @@
                 return 0;
             }
         },
+
         calculateTotal: function(data) {
             this.total = 0;
             helpers.each(data, function(segment) {
                 this.total += Math.abs(segment.value);
             }, this);
         },
+
         update: function() {
             this.calculateTotal(this.segments);
 
@@ -2718,6 +2307,7 @@
                 });
             }, this);
         },
+
         draw: function(easeDecimal) {
             var animDecimal = (easeDecimal) ? easeDecimal : 1;
             this.clear();
@@ -2734,67 +2324,63 @@
                 if (index === 0) {
                     segment.startAngle = Math.PI * 1.5;
                 }
-                //Check to see if it's the last segment, if not get the next and update the start angle
+                // Check to see if it's the last segment, if not get the next and update the start angle
                 if (index < this.segments.length - 1) {
                     this.segments[index + 1].startAngle = segment.endAngle;
                 }
             }, this);
-
         }
     });
 
     Chart.types.Doughnut.extend({
-        name: "Pie",
+        name: 'Pie',
         defaults: helpers.merge(defaultConfig, { percentageInnerCutout: 0 })
     });
-
 }).call(this);
 
 /**
  * https://github.com/tomsouthall/Chart.HorizontalBar.js
  */
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
-
     var defaultConfig = {
-        //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+        // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
         scaleBeginAtZero: true,
 
-        //Boolean - Whether grid lines are shown across the chart
+        // Boolean - Whether grid lines are shown across the chart
         scaleShowGridLines: true,
 
-        //String - Colour of the grid lines
-        scaleGridLineColor: "rgba(0,0,0,.05)",
+        // String - Colour of the grid lines
+        scaleGridLineColor: 'rgba(0,0,0,.05)',
 
-        //Number - Width of the grid lines
+        // Number - Width of the grid lines
         scaleGridLineWidth: 1,
 
-        //Boolean - Whether to show horizontal lines (except X axis)
+        // Boolean - Whether to show horizontal lines (except X axis)
         scaleShowHorizontalLines: true,
 
-        //Boolean - Whether to show vertical lines (except Y axis)
+        // Boolean - Whether to show vertical lines (except Y axis)
         scaleShowVerticalLines: true,
 
-        //Boolean - If there is a stroke on each bar
+        // Boolean - If there is a stroke on each bar
         barShowStroke: true,
 
-        //Number - Pixel width of the bar stroke
+        // Number - Pixel width of the bar stroke
         barStrokeWidth: 2,
 
-        //Number - Spacing between each of the X value sets
+        // Number - Spacing between each of the X value sets
         barValueSpacing: 5,
 
-        //Number - Spacing between data sets within X values
+        // Number - Spacing between data sets within X values
         barDatasetSpacing: 1,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
-
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].fillColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
     };
 
     Chart.HorizontalRectangle = Chart.Element.extend({
@@ -2831,46 +2417,47 @@
                 ctx.stroke();
             }
         },
+
         inRange: function(chartX, chartY) {
             return (chartX >= this.left && chartX <= this.x && chartY >= (this.y - this.height / 2) && chartY <= (this.y + this.height / 2));
         }
     });
 
     Chart.Type.extend({
-        name: "HorizontalBar",
+        name: 'HorizontalBar',
         defaults: defaultConfig,
-        initialize: function(data) {
 
-            //Expose options as a scope variable here so we can access it in the ScaleClass
+        initialize: function(data) {
             var options = this.options;
 
             this.ScaleClass = Chart.Scale.extend({
                 offsetGridLines: true,
+
                 calculateBarX: function(datasetCount, datasetIndex, barIndex) {
-                    //Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
+                    // Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
                     var xWidth = this.calculateBaseWidth(),
                         xAbsolute = this.calculateX(barIndex) - (xWidth / 2),
                         barWidth = this.calculateBarWidth(datasetCount);
-
                     return xAbsolute + (barWidth * datasetIndex) + (datasetIndex * options.barDatasetSpacing) + barWidth / 2;
                 },
+
                 calculateBaseWidth: function() {
                     return (this.calculateX(1) - this.calculateX(0)) - (2 * options.barValueSpacing);
                 },
-                calculateBarWidth: function(datasetCount) {
-                    //The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-                    var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
 
+                calculateBarWidth: function(datasetCount) {
+                    // The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
+                    var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
                     return (baseWidth / datasetCount);
                 },
 
                 calculateBaseHeight: function() {
                     return ((this.endPoint - this.startPoint) / this.yLabels.length) - (2 * options.barValueSpacing);
                 },
-                calculateBarHeight: function(datasetCount) {
-                    //The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-                    var baseHeight = this.calculateBaseHeight() - ((datasetCount) * options.barDatasetSpacing);
 
+                calculateBarHeight: function(datasetCount) {
+                    // The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
+                    var baseHeight = this.calculateBaseHeight() - ((datasetCount) * options.barDatasetSpacing);
                     return (baseHeight / datasetCount);
                 },
 
@@ -2884,17 +2471,18 @@
                 },
 
                 calculateBarY: function(datasetCount, datasetIndex, barIndex) {
-                    //Reusable method for calculating the yPosition of a given bar based on datasetIndex & height of the bar
+                    // Reusable method for calculating the yPosition of a given bar based on datasetIndex & height of the bar
                     var yHeight = this.calculateBaseHeight(),
                         yAbsolute = (this.endPoint + this.calculateYInvertXY(barIndex) - (yHeight / 2)) - 5,
                         barHeight = this.calculateBarHeight(datasetCount);
-                    if (datasetCount > 1) yAbsolute = yAbsolute + (barHeight * (datasetIndex - 1)) - (datasetIndex * options.barDatasetSpacing) + barHeight / 2;
+                    if (datasetCount > 1) {
+                        yAbsolute = yAbsolute + (barHeight * (datasetIndex - 1)) - (datasetIndex * options.barDatasetSpacing) + barHeight / 2;
+                    }
                     return yAbsolute;
                 },
 
                 buildCalculatedLabels: function() {
                     this.calculatedLabels = [];
-
                     var stepDecimalPlaces = helpers.getDecimalPlaces(this.stepValue);
 
                     for (var i = 0; i <= this.steps; i++) {
@@ -2905,21 +2493,20 @@
                 buildYLabels: function() {
                     this.buildYLabelCounter = (typeof this.buildYLabelCounter === 'undefined') ? 0 : this.buildYLabelCounter + 1;
                     this.buildCalculatedLabels();
-                    if (this.buildYLabelCounter === 0) this.yLabels = this.xLabels;
+                    if (this.buildYLabelCounter === 0) {
+                        this.yLabels = this.xLabels;
+                    }
                     this.xLabels = this.calculatedLabels;
                     this.yLabelWidth = (this.display && this.showLabels) ? helpers.longestText(this.ctx, this.font, this.yLabels) : 0;
                 },
 
                 calculateX: function(index) {
-                    var isRotated = (this.xLabelRotation > 0),
-                        innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
+                    var innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
                         valueWidth = innerWidth / (this.steps - ((this.offsetGridLines) ? 0 : 1)),
                         valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
-
                     if (this.offsetGridLines) {
                         valueOffset += (valueWidth / 2);
                     }
-
                     return Math.round(valueOffset);
                 },
 
@@ -2937,8 +2524,8 @@
 
                             yLabelCenter -= yLabelGap / 2;
 
-                            ctx.textAlign = "right";
-                            ctx.textBaseline = "middle";
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'middle';
                             if (this.showLabels) {
                                 ctx.fillText(labelString, xStart - 10, yLabelCenter);
                             }
@@ -3001,10 +2588,8 @@
                             ctx.stroke();
                             ctx.closePath();
 
-
                             ctx.lineWidth = this.lineWidth;
                             ctx.strokeStyle = this.lineColor;
-
 
                             // Small lines at the bottom of the base grid line
                             ctx.beginPath();
@@ -3017,20 +2602,18 @@
                             ctx.translate(xPos, (isRotated) ? this.endPoint + 12 : this.endPoint + 8);
                             ctx.rotate(helpers.radians(this.xLabelRotation) * -1);
                             ctx.font = this.font;
-                            ctx.textAlign = (isRotated) ? "right" : "center";
-                            ctx.textBaseline = (isRotated) ? "middle" : "top";
+                            ctx.textAlign = (isRotated) ? 'right' : 'center';
+                            ctx.textBaseline = (isRotated) ? 'middle' : 'top';
                             ctx.fillText(label, 0, 0);
                             ctx.restore();
                         }, this);
-
                     }
                 }
-
             });
 
             this.datasets = [];
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeBars = (evt.type !== 'mouseout') ? this.getBarsAtEvent(evt) : [];
@@ -3046,23 +2629,21 @@
                 });
             }
 
-            //Declare the extension of the default point, to cater for the options passed in to the constructor
+            // Declare the extension of the default point, to cater for the options passed in to the constructor
             this.BarClass = Chart.HorizontalRectangle.extend({
                 strokeWidth: this.options.barStrokeWidth,
                 showStroke: this.options.barShowStroke,
                 ctx: this.chart.ctx
             });
 
-            //Iterate through each of the datasets, and build this into a property of the chart
-            helpers.each(data.datasets, function(dataset, datasetIndex) {
-
+            // Iterate through each of the datasets, and build this into a property of the chart
+            helpers.each(data.datasets, function(dataset) {
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
                     strokeColor: dataset.strokeColor,
                     bars: []
                 };
-
                 this.datasets.push(datasetObject);
 
                 helpers.each(dataset.data, function(dataPoint, index) {
@@ -3095,6 +2676,7 @@
 
             this.render();
         },
+
         update: function() {
             this.scale.update();
             // Reset any highlight colours before updating.
@@ -3107,11 +2689,13 @@
             });
             this.render();
         },
+
         eachBars: function(callback) {
             helpers.each(this.datasets, function(dataset, datasetIndex) {
                 helpers.each(dataset.bars, callback, this, datasetIndex);
             }, this);
         },
+
         getBarsAtEvent: function(e) {
             var barsArray = [],
                 eventPosition = helpers.getRelativePosition(e),
@@ -3131,6 +2715,7 @@
 
             return barsArray;
         },
+
         buildScale: function(labels) {
             var self = this;
 
@@ -3171,7 +2756,7 @@
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
                 showVerticalLines: this.options.scaleShowVerticalLines,
                 gridLineWidth: (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : 'rgba(0,0,0,0)',
                 padding: (this.options.showScale) ? 0 : (this.options.barShowStroke) ? this.options.barStrokeWidth : 0,
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
@@ -3189,10 +2774,11 @@
 
             this.scale = new this.ScaleClass(scaleOptions);
         },
+
         addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
+            // Map the values array for each of the datasets
             helpers.each(valuesArray, function(value, datasetIndex) {
-                //Add a new point for each piece of data, passing any required data to draw.
+                // Add a new point for each piece of data, passing any required data to draw.
                 this.datasets[datasetIndex].bars.push(new this.BarClass({
                     value: value,
                     label: label,
@@ -3206,17 +2792,19 @@
             }, this);
 
             this.scale.addXLabel(label);
-            //Then re-render the chart.
+            // Then re-render the chart.
             this.update();
         },
+
         removeData: function() {
             this.scale.removeXLabel();
-            //Then re-render the chart.
+            // Then re-render the chart.
             helpers.each(this.datasets, function(dataset) {
                 dataset.bars.shift();
             }, this);
             this.update();
         },
+
         reflow: function() {
             helpers.extend(this.BarClass.prototype, {
                 y: this.scale.endPoint,
@@ -3229,20 +2817,19 @@
 
             this.scale.update(newScaleProps);
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
             this.clear();
 
-            var ctx = this.chart.ctx;
-
             this.scale.draw(easingDecimal);
 
-            //Draw all the bars for each dataset
+            // Draw all the bars for each dataset
             helpers.each(this.datasets, function(dataset, datasetIndex) {
                 helpers.each(dataset.bars, function(bar, index) {
                     if (bar.hasValue()) {
                         bar.left = Math.round(this.scale.xScalePaddingLeft);
-                        //Transition then draw
+                        // Transition then draw
                         bar.transition({
                             x: this.scale.calculateXInvertXY(bar.value),
                             y: this.scale.calculateBarY(this.datasets.length, datasetIndex, index),
@@ -3250,78 +2837,73 @@
                         }, easingDecimal).draw();
                     }
                 }, this);
-
             }, this);
         }
     });
-
-
 }).call(this);
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
     var defaultConfig = {
-
-        ///Boolean - Whether grid lines are shown across the chart
+        // Boolean - Whether grid lines are shown across the chart
         scaleShowGridLines: true,
 
-        //String - Colour of the grid lines
-        scaleGridLineColor: "rgba(0,0,0,.05)",
+        // String - Colour of the grid lines
+        scaleGridLineColor: 'rgba(0,0,0,.05)',
 
-        //Number - Width of the grid lines
+        // Number - Width of the grid lines
         scaleGridLineWidth: 1,
 
-        //Boolean - Whether to show horizontal lines (except X axis)
+        // Boolean - Whether to show horizontal lines (except X axis)
         scaleShowHorizontalLines: true,
 
-        //Boolean - Whether to show vertical lines (except Y axis)
+        // Boolean - Whether to show vertical lines (except Y axis)
         scaleShowVerticalLines: true,
 
-        //Boolean - Whether the line is curved between points
+        // Boolean - Whether the line is curved between points
         bezierCurve: true,
 
-        //Number - Tension of the bezier curve between points
+        // Number - Tension of the bezier curve between points
         bezierCurveTension: 0.4,
 
-        //Boolean - Whether to show a dot for each point
+        // Boolean - Whether to show a dot for each point
         pointDot: true,
 
-        //Number - Radius of each point dot in pixels
+        // Number - Radius of each point dot in pixels
         pointDotRadius: 4,
 
-        //Number - Pixel width of point dot stroke
+        // Number - Pixel width of point dot stroke
         pointDotStrokeWidth: 1,
 
-        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
         pointHitDetectionRadius: 20,
 
-        //Boolean - Whether to show a stroke for datasets
+        // Boolean - Whether to show a stroke for datasets
         datasetStroke: true,
 
-        //Number - Pixel width of dataset stroke
+        // Number - Pixel width of dataset stroke
         datasetStrokeWidth: 2,
 
-        //Boolean - Whether to fill the dataset with a colour
+        // Boolean - Whether to fill the dataset with a colour
         datasetFill: true,
 
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].strokeColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>",
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>',
 
-        //Boolean - Whether to horizontally center the label and point dot inside the grid
+        // Boolean - Whether to horizontally center the label and point dot inside the grid
         offsetGridLines: false
-
     };
 
-
     Chart.Type.extend({
-        name: "Line",
+        name: 'Line',
         defaults: defaultConfig,
+
         initialize: function(data) {
-            //Declare the extension of the default point, to cater for the options passed in to the constructor
+            // Declare the extension of the default point, to cater for the options passed in to the constructor
             this.PointClass = Chart.Point.extend({
                 offsetGridLines: this.options.offsetGridLines,
                 strokeWidth: this.options.pointDotStrokeWidth,
@@ -3336,7 +2918,7 @@
 
             this.datasets = [];
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activePoints = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
@@ -3351,9 +2933,8 @@
                 });
             }
 
-            //Iterate through each of the datasets, and build this into a property of the chart
+            // Iterate through each of the datasets, and build this into a property of the chart
             helpers.each(data.datasets, function(dataset) {
-
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
@@ -3362,12 +2943,10 @@
                     pointStrokeColor: dataset.pointStrokeColor,
                     points: []
                 };
-
                 this.datasets.push(datasetObject);
 
-
                 helpers.each(dataset.data, function(dataPoint, index) {
-                    //Add a new point for each piece of data, passing any required data to draw.
+                    // Add a new point for each piece of data, passing any required data to draw.
                     datasetObject.points.push(new this.PointClass({
                         value: dataPoint,
                         label: data.labels[index],
@@ -3381,7 +2960,6 @@
 
                 this.buildScale(data.labels);
 
-
                 this.eachPoints(function(point, index) {
                     helpers.extend(point, {
                         x: this.scale.calculateX(index),
@@ -3389,12 +2967,11 @@
                     });
                     point.save();
                 }, this);
-
             }, this);
-
 
             this.render();
         },
+
         update: function() {
             this.scale.update();
             // Reset any highlight colours before updating.
@@ -3406,11 +2983,13 @@
             });
             this.render();
         },
+
         eachPoints: function(callback) {
             helpers.each(this.datasets, function(dataset) {
                 helpers.each(dataset.points, callback, this);
             }, this);
         },
+
         getPointsAtEvent: function(e) {
             var pointsArray = [],
                 eventPosition = helpers.getRelativePosition(e);
@@ -3421,6 +3000,7 @@
             }, this);
             return pointsArray;
         },
+
         buildScale: function(labels) {
             var self = this;
 
@@ -3429,7 +3009,6 @@
                 self.eachPoints(function(point) {
                     values.push(point.value);
                 });
-
                 return values;
             };
 
@@ -3464,7 +3043,7 @@
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
                 showVerticalLines: this.options.scaleShowVerticalLines,
                 gridLineWidth: (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+                gridLineColor: (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : 'rgba(0,0,0,0)',
                 padding: (this.options.showScale) ? 0 : this.options.pointDotRadius + this.options.pointDotStrokeWidth,
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
@@ -3480,14 +3059,13 @@
                 });
             }
 
-
             this.scale = new Chart.Scale(scaleOptions);
         },
-        addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
 
+        addData: function(valuesArray, label) {
+            // Map the values array for each of the datasets
             helpers.each(valuesArray, function(value, datasetIndex) {
-                //Add a new point for each piece of data, passing any required data to draw.
+                // Add a new point for each piece of data, passing any required data to draw.
                 this.datasets[datasetIndex].points.push(new this.PointClass({
                     value: value,
                     label: label,
@@ -3500,17 +3078,19 @@
             }, this);
 
             this.scale.addXLabel(label);
-            //Then re-render the chart.
+            // Then re-render the chart.
             this.update();
         },
+
         removeData: function() {
             this.scale.removeXLabel();
-            //Then re-render the chart.
+            // Then re-render the chart.
             helpers.each(this.datasets, function(dataset) {
                 dataset.points.shift();
             }, this);
             this.update();
         },
+
         reflow: function() {
             var newScaleProps = helpers.extend({
                 height: this.chart.height,
@@ -3518,6 +3098,7 @@
             });
             this.scale.update(newScaleProps);
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
             this.clear();
@@ -3525,26 +3106,18 @@
             var ctx = this.chart.ctx;
 
             // Some helper methods for getting the next/prev points
-            var hasValue = function(item) {
-                return item.value !== null;
-            },
-                nextPoint = function(point, collection, index) {
-                    return helpers.findNextWhere(collection, hasValue, index) || point;
-                },
-                previousPoint = function(point, collection, index) {
-                    return helpers.findPreviousWhere(collection, hasValue, index) || point;
-                };
+            var hasValue = function(item) { return item.value !== null; },
+                nextPoint = function(point, collection, index) { return helpers.findNextWhere(collection, hasValue, index) || point; },
+                previousPoint = function(point, collection, index) { return helpers.findPreviousWhere(collection, hasValue, index) || point; };
 
             if (!this.scale) return;
             this.scale.draw(easingDecimal);
 
-
             helpers.each(this.datasets, function(dataset) {
                 var pointsWithValues = helpers.where(dataset.points, hasValue);
 
-                //Transition each point first so that the line and point drawing isn't out of sync
-                //We can use this extra loop to calculate the control points of this dataset also in this loop
-
+                // Transition each point first so that the line and point drawing isn't out of sync
+                // We can use this extra loop to calculate the control points of this dataset also in this loop
                 helpers.each(dataset.points, function(point, index) {
                     if (point.hasValue()) {
                         point.transition({
@@ -3554,9 +3127,8 @@
                     }
                 }, this);
 
-
                 // Control points need to be calculated in a separate loop, because we need to know the current x/y of the point
-                // This would cause issues when there is no animation, because the y of the next point would be 0, so beziers would be skewed
+                // This would cause issues because the y of the next point would be 0, so beziers would be skewed
                 if (this.options.bezierCurve) {
                     helpers.each(pointsWithValues, function(point, index) {
                         var tension = (index > 0 && index < pointsWithValues.length - 1) ? this.options.bezierCurveTension : 0;
@@ -3568,27 +3140,23 @@
                         );
 
                         // Prevent the bezier going outside of the bounds of the graph
-
                         // Cap puter bezier handles to the upper/lower scale bounds
                         if (point.controlPoints.outer.y > this.scale.endPoint) {
                             point.controlPoints.outer.y = this.scale.endPoint;
-                        }
-                        else if (point.controlPoints.outer.y < this.scale.startPoint) {
+                        } else if (point.controlPoints.outer.y < this.scale.startPoint) {
                             point.controlPoints.outer.y = this.scale.startPoint;
                         }
 
                         // Cap inner bezier handles to the upper/lower scale bounds
                         if (point.controlPoints.inner.y > this.scale.endPoint) {
                             point.controlPoints.inner.y = this.scale.endPoint;
-                        }
-                        else if (point.controlPoints.inner.y < this.scale.startPoint) {
+                        } else if (point.controlPoints.inner.y < this.scale.startPoint) {
                             point.controlPoints.inner.y = this.scale.startPoint;
                         }
                     }, this);
                 }
 
-
-                //Draw the line between all the points
+                // Draw the line between all the points
                 ctx.lineWidth = this.options.datasetStrokeWidth;
                 ctx.strokeStyle = dataset.strokeColor;
                 ctx.beginPath();
@@ -3596,11 +3164,9 @@
                 helpers.each(pointsWithValues, function(point, index) {
                     if (index === 0) {
                         ctx.moveTo(point.x, point.y);
-                    }
-                    else {
+                    } else {
                         if (this.options.bezierCurve) {
                             var previous = previousPoint(point, pointsWithValues, index);
-
                             ctx.bezierCurveTo(
                                 previous.controlPoints.outer.x,
                                 previous.controlPoints.outer.y,
@@ -3609,8 +3175,7 @@
                                 point.x,
                                 point.y
                             );
-                        }
-                        else {
+                        } else {
                             ctx.lineTo(point.x, point.y);
                         }
                     }
@@ -3621,7 +3186,7 @@
                 }
 
                 if (this.options.datasetFill && pointsWithValues.length > 0) {
-                    //Round off the line by going to the base of the chart, back to the start, then fill.
+                    // Round off the line by going to the base of the chart, back to the start, then fill.
                     ctx.lineTo(pointsWithValues[pointsWithValues.length - 1].x, this.scale.endPoint);
                     ctx.lineTo(pointsWithValues[0].x, this.scale.endPoint);
                     ctx.fillStyle = dataset.fillColor;
@@ -3629,82 +3194,67 @@
                     ctx.fill();
                 }
 
-                //Now draw the points over the line
-                //A little inefficient double looping, but better than the line
-                //lagging behind the point positions
+                // Now draw the points over the line
+                // A little inefficient double looping, but better than the line
+                // lagging behind the point positions
                 helpers.each(pointsWithValues, function(point) {
                     point.draw();
                 });
             }, this);
         }
     });
-
-
 }).call(this);
 
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
-        //Cache a local reference to Chart.helpers
         helpers = Chart.helpers;
 
     var defaultConfig = {
-        //Boolean - Show a backdrop to the scale label
+        // Boolean - Show a backdrop to the scale label
         scaleShowLabelBackdrop: true,
 
-        //String - The colour of the label backdrop
-        scaleBackdropColor: "rgba(255,255,255,0.75)",
+        // String - The colour of the label backdrop
+        scaleBackdropColor: 'rgba(255,255,255,0.75)',
 
         // Boolean - Whether the scale should begin at zero
         scaleBeginAtZero: true,
 
-        //Number - The backdrop padding above & below the label in pixels
+        // Number - The backdrop padding above & below the label in pixels
         scaleBackdropPaddingY: 2,
 
-        //Number - The backdrop padding to the side of the label in pixels
+        // Number - The backdrop padding to the side of the label in pixels
         scaleBackdropPaddingX: 2,
 
-        //Boolean - Show line for each value in the scale
+        // Boolean - Show line for each value in the scale
         scaleShowLine: true,
 
-        //Boolean - Stroke a line around each segment in the chart
+        // Boolean - Stroke a line around each segment in the chart
         segmentShowStroke: true,
 
-        //String - The colour of the stroke on each segment.
-        segmentStrokeColor: "#fff",
+        // String - The colour of the stroke on each segment.
+        segmentStrokeColor: '#fff',
 
-        //Number - The width of the stroke value in pixels
+        // Number - The width of the stroke value in pixels
         segmentStrokeWidth: 2,
 
-        //Number - Amount of animation steps
-        animationSteps: 100,
-
-        //String - Animation easing effect.
-        animationEasing: "easeOutBounce",
-
-        //Boolean - Whether to animate the rotation of the chart
-        animateRotate: true,
-
-        //Boolean - Whether to animate scaling the chart from the centre
-        animateScale: false,
-
-        //String - A legend template
-        legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=segments[i].fillColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>"
+        // String - A legend template
+        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
     };
 
-
     Chart.Type.extend({
-        //Passing in a name registers this chart in the Chart namespace
-        name: "PolarArea",
-        //Providing a defaults will also register the defaults in the chart namespace
+        // Passing in a name registers this chart in the Chart namespace
+        name: 'PolarArea',
+        // Providing a defaults will also register the defaults in the chart namespace
         defaults: defaultConfig,
-        //Initialize is fired when the chart is initialized - Data is passed in as a parameter
-        //Config is automatically merged by the core of Chart.js, and is available at this.options
+
+        // Initialize is fired when the chart is initialized - Data is passed in as a parameter
+        // Config is automatically merged by the core of Chart.js, and is available at this.options
         initialize: function(data) {
             this.segments = [];
-            //Declare segment class as a chart instance specific class, so it can share props for this instance
+            // Declare segment class as a chart instance specific class, so it can share props for this instance
             this.SegmentArc = Chart.Arc.extend({
                 showStroke: this.options.segmentShowStroke,
                 strokeWidth: this.options.segmentStrokeWidth,
@@ -3745,12 +3295,12 @@
                 this.addData(segment, index, true);
             }, this);
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
                     helpers.each(this.segments, function(segment) {
-                        segment.restore(["fillColor"]);
+                        segment.restore(['fillColor']);
                     });
                     helpers.each(activeSegments, function(activeSegment) {
                         activeSegment.fillColor = activeSegment.highlightColor;
@@ -3761,26 +3311,34 @@
 
             this.render();
         },
+
         getSegmentsAtEvent: function(e) {
             var segmentsArray = [];
 
             var location = helpers.getRelativePosition(e);
 
             helpers.each(this.segments, function(segment) {
-                if (segment.inRange(location.x, location.y)) segmentsArray.push(segment);
+                if (segment.inRange(location.x, location.y)) {
+                    segmentsArray.push(segment);
+                }
             }, this);
             return segmentsArray;
         },
+
         addData: function(segment, atIndex, silent) {
             var index = atIndex || this.segments.length;
+            if (typeof (segment.color) === 'undefined') {
+                segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
+                segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];
+            }
 
             this.segments.splice(index, 0, new this.SegmentArc({
                 fillColor: segment.color,
                 highlightColor: segment.highlight || segment.color,
                 label: segment.label,
                 value: segment.value,
-                outerRadius: (this.options.animateScale) ? 0 : this.scale.calculateCenterOffset(segment.value),
-                circumference: (this.options.animateRotate) ? 0 : this.scale.getCircumference(),
+                outerRadius: this.scale.calculateCenterOffset(segment.value),
+                circumference: this.scale.getCircumference(),
                 startAngle: Math.PI * 1.5
             }));
             if (!silent) {
@@ -3788,12 +3346,14 @@
                 this.update();
             }
         },
+
         removeData: function(atIndex) {
             var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length - 1;
             this.segments.splice(indexToDelete, 1);
             this.reflow();
             this.update();
         },
+
         calculateTotal: function(data) {
             this.total = 0;
             helpers.each(data, function(segment) {
@@ -3801,6 +3361,7 @@
             }, this);
             this.scale.valuesCount = this.segments.length;
         },
+
         updateScaleRange: function(datapoints) {
             var valuesArray = [];
             helpers.each(datapoints, function(segment) {
@@ -3831,8 +3392,8 @@
                     yCenter: this.chart.height / 2
                 }
             );
-
         },
+
         update: function() {
             this.calculateTotal(this.segments);
 
@@ -3843,6 +3404,7 @@
             this.reflow();
             this.render();
         },
+
         reflow: function() {
             helpers.extend(this.SegmentArc.prototype, {
                 x: this.chart.width / 2,
@@ -3863,9 +3425,10 @@
             }, this);
 
         },
+
         draw: function(ease) {
             var easingDecimal = ease || 1;
-            //Clear & draw the canvas
+            // Clear & draw the canvas
             this.clear();
             helpers.each(this.segments, function(segment, index) {
                 segment.transition({
@@ -3875,13 +3438,12 @@
 
                 segment.endAngle = segment.startAngle + segment.circumference;
 
-                // If we've removed the first segment we need to set the first one to
-                // start at the top.
+                // If we've removed the first segment we need to set the first one to start at the top.
                 if (index === 0) {
                     segment.startAngle = Math.PI * 1.5;
                 }
 
-                //Check to see if it's the last segment, if not get the next and update the start angle
+                // Check to see if it's the last segment, if not get the next and update the start angle
                 if (index < this.segments.length - 1) {
                     this.segments[index + 1].startAngle = segment.endAngle;
                 }
@@ -3890,78 +3452,74 @@
             this.scale.draw();
         }
     });
-
 }).call(this);
 
 (function() {
-    "use strict";
+    'use strict';
 
     var root = this,
         Chart = root.Chart,
         helpers = Chart.helpers;
 
-
-
     Chart.Type.extend({
-        name: "Radar",
+        name: 'Radar',
         defaults: {
-            //Boolean - Whether to show lines for each scale point
+            // Boolean - Whether to show lines for each scale point
             scaleShowLine: true,
 
-            //Boolean - Whether we show the angle lines out of the radar
+            // Boolean - Whether we show the angle lines out of the radar
             angleShowLineOut: true,
 
-            //Boolean - Whether to show labels on the scale
+            // Boolean - Whether to show labels on the scale
             scaleShowLabels: false,
 
             // Boolean - Whether the scale should begin at zero
             scaleBeginAtZero: true,
 
-            //String - Colour of the angle line
-            angleLineColor: "rgba(0,0,0,.1)",
+            // String - Colour of the angle line
+            angleLineColor: 'rgba(0,0,0,.1)',
 
-            //Number - Pixel width of the angle line
+            // Number - Pixel width of the angle line
             angleLineWidth: 1,
 
-            //Number - Interval at which to draw angle lines ("every Nth point")
+            // Number - Interval at which to draw angle lines ("every Nth point")
             angleLineInterval: 1,
 
-            //String - Point label font declaration
-            pointLabelFontFamily: "'Arial'",
+            // String - Point label font declaration
+            pointLabelFontFamily: 'Arial',
 
-            //String - Point label font weight
-            pointLabelFontStyle: "normal",
+            // String - Point label font weight
+            pointLabelFontStyle: 'normal',
 
-            //Number - Point label font size in pixels
+            // Number - Point label font size in pixels
             pointLabelFontSize: 10,
 
-            //String - Point label font colour
-            pointLabelFontColor: "#666",
+            // String - Point label font colour
+            pointLabelFontColor: '#666',
 
-            //Boolean - Whether to show a dot for each point
+            // Boolean - Whether to show a dot for each point
             pointDot: true,
 
-            //Number - Radius of each point dot in pixels
+            // Number - Radius of each point dot in pixels
             pointDotRadius: 3,
 
-            //Number - Pixel width of point dot stroke
+            // Number - Pixel width of point dot stroke
             pointDotStrokeWidth: 1,
 
-            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
             pointHitDetectionRadius: 20,
 
-            //Boolean - Whether to show a stroke for datasets
+            // Boolean - Whether to show a stroke for datasets
             datasetStroke: true,
 
-            //Number - Pixel width of dataset stroke
+            // Number - Pixel width of dataset stroke
             datasetStrokeWidth: 2,
 
-            //Boolean - Whether to fill the dataset with a colour
+            // Boolean - Whether to fill the dataset with a colour
             datasetFill: true,
 
-            //String - A legend template
-            legendTemplate: "<ul class=\"chart-legend <%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span class=\"chart-legend-icon <%=name.toLowerCase()%>-legend-icon\" style=\"background-color:<%=datasets[i].strokeColor%>\"></span><span class=\"<%=name.toLowerCase()%>-legend-text\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
-
+            // String - A legend template
+            legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
         },
 
         initialize: function(data) {
@@ -3977,7 +3535,7 @@
 
             this.buildScale(data);
 
-            //Set up tooltip events on the chart
+            // Set up tooltip events on the chart
             if (this.options.showTooltips) {
                 helpers.bindEvents(this, this.options.tooltipEvents, function(evt) {
                     var activePointsCollection = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
@@ -3994,9 +3552,8 @@
                 });
             }
 
-            //Iterate through each of the datasets, and build this into a property of the chart
+            // Iterate through each of the datasets, and build this into a property of the chart
             helpers.each(data.datasets, function(dataset) {
-
                 var datasetObject = {
                     label: dataset.label || null,
                     fillColor: dataset.fillColor,
@@ -4009,28 +3566,25 @@
                 this.datasets.push(datasetObject);
 
                 helpers.each(dataset.data, function(dataPoint, index) {
-                    //Add a new point for each piece of data, passing any required data to draw.
-                    var pointPosition;
-                    if (!this.scale.animation) {
-                        pointPosition = this.scale.getPointPosition(index, this.scale.calculateCenterOffset(dataPoint));
-                    }
+                    // Add a new point for each piece of data, passing any required data to draw.
+                    var pointPosition = this.scale.getPointPosition(index, this.scale.calculateCenterOffset(dataPoint));
                     datasetObject.points.push(new this.PointClass({
                         value: dataPoint,
                         label: data.labels[index],
                         datasetLabel: dataset.label,
-                        x: (this.options.animation) ? this.scale.xCenter : pointPosition.x,
-                        y: (this.options.animation) ? this.scale.yCenter : pointPosition.y,
+                        x: pointPosition.x,
+                        y: pointPosition.y,
                         strokeColor: dataset.pointStrokeColor,
                         fillColor: dataset.pointColor,
                         highlightFill: dataset.pointHighlightFill || dataset.pointColor,
                         highlightStroke: dataset.pointHighlightStroke || dataset.pointStrokeColor
                     }));
                 }, this);
-
             }, this);
 
             this.render();
         },
+
         eachPoints: function(callback) {
             helpers.each(this.datasets, function(dataset) {
                 helpers.each(dataset.points, callback, this);
@@ -4099,14 +3653,14 @@
             this.updateScaleRange(data.datasets);
             this.scale.buildYLabels();
         },
+
         updateScaleRange: function(datasets) {
             var valuesArray = (function() {
                 var totalDataArray = [];
                 helpers.each(datasets, function(dataset) {
                     if (dataset.data) {
                         totalDataArray = totalDataArray.concat(dataset.data);
-                    }
-                    else {
+                    } else {
                         helpers.each(dataset.points, function(point) {
                             totalDataArray.push(point.value);
                         });
@@ -4114,7 +3668,6 @@
                 });
                 return totalDataArray;
             })();
-
 
             var scaleSizes = (this.options.scaleOverride) ?
                 {
@@ -4137,8 +3690,9 @@
             );
 
         },
+
         addData: function(valuesArray, label) {
-            //Map the values array for each of the datasets
+            // Map the values array for each of the datasets
             this.scale.valuesCount++;
             helpers.each(valuesArray, function(value, datasetIndex) {
                 var pointPosition = this.scale.getPointPosition(this.scale.valuesCount, this.scale.calculateCenterOffset(value));
@@ -4159,6 +3713,7 @@
 
             this.update();
         },
+
         removeData: function() {
             this.scale.valuesCount--;
             this.scale.labels.shift();
@@ -4168,6 +3723,7 @@
             this.reflow();
             this.update();
         },
+
         update: function() {
             this.eachPoints(function(point) {
                 point.save();
@@ -4175,6 +3731,7 @@
             this.reflow();
             this.render();
         },
+
         reflow: function() {
             helpers.extend(this.scale, {
                 width: this.chart.width,
@@ -4187,6 +3744,7 @@
             this.scale.setScaleSize();
             this.scale.buildYLabels();
         },
+
         draw: function(ease) {
             var easeDecimal = ease || 1,
                 ctx = this.chart.ctx;
@@ -4194,25 +3752,21 @@
             this.scale.draw();
 
             helpers.each(this.datasets, function(dataset) {
-
-                //Transition each point first so that the line and point drawing isn't out of sync
+                // Transition each point first so that the line and point drawing isn't out of sync
                 helpers.each(dataset.points, function(point, index) {
                     if (point.hasValue()) {
                         point.transition(this.scale.getPointPosition(index, this.scale.calculateCenterOffset(point.value)), easeDecimal);
                     }
                 }, this);
 
-
-
-                //Draw the line between all the points
+                // Draw the line between all the points
                 ctx.lineWidth = this.options.datasetStrokeWidth;
                 ctx.strokeStyle = dataset.strokeColor;
                 ctx.beginPath();
                 helpers.each(dataset.points, function(point, index) {
                     if (index === 0) {
                         ctx.moveTo(point.x, point.y);
-                    }
-                    else {
+                    } else {
                         ctx.lineTo(point.x, point.y);
                     }
                 }, this);
@@ -4223,23 +3777,15 @@
                 if (this.options.datasetFill) {
                     ctx.fill();
                 }
-                //Now draw the points over the line
-                //A little inefficient double looping, but better than the line
-                //lagging behind the point positions
+                // Now draw the points over the line
+                // A little inefficient double looping, but better than the line
+                // lagging behind the point positions
                 helpers.each(dataset.points, function(point) {
                     if (point.hasValue()) {
                         point.draw();
                     }
                 });
-
             }, this);
-
         }
-
     });
-
-
-
-
-
 }).call(this);

@@ -15,21 +15,11 @@ var myLineChart = new Chart(ctx).Line(data);
 
 #### .clear()
 
-Will clear the chart canvas. Used extensively internally between animation frames, but you might find it useful.
+Will clear the chart canvas. Used extensively internally.
 
 ```javascript
 // Will clear the canvas that myLineChart is drawn on
 myLineChart.clear();
-// => returns 'this' for chainability
-```
-
-#### .stop()
-
-Use this to stop any current animation loop. This will pause the chart during any current animation frame. Call `.render()` to re-animate.
-
-```javascript
-// Stops the charts animation loop at its current frame
-myLineChart.stop();
 // => returns 'this' for chainability
 ```
 
@@ -107,7 +97,7 @@ See files `sample/pie-customTooltips.html` and `sample/line-customTooltips.html`
 
 Chart.js 1.0 has been rewritten to provide a platform for developers to create their own custom chart types, and be able to share and utilise them through the Chart.js API.
 
-The format is relatively simple, there are a set of utility helper methods under `Chart.helpers`, including things such as looping over collections, requesting animation frames, and easing equations.
+The format is relatively simple, there are a set of utility helper methods under `Chart.helpers`, including things such as looping over collections.
 
 On top of this, there are also some simple base classes of Chart elements, these all extend from `Chart.Element`, and include things such as points, bars and scales.
 
