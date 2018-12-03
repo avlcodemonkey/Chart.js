@@ -11,21 +11,19 @@
     "license": "MIT",
     "dependences": {},
     "devDependencies": {
-        "gulp": "3.9.x",
+        "gulp": "^4.0.0",
         "gulp-concat": "^2.6.1",
         "gulp-jshint": "^2.1.0",
+        "gulp-plumber": "^1.2.1",
         "gulp-replace": "^1.0.0",
         "gulp-size": "^3.0.0",
         "gulp-uglify": "^3.0.1",
         "gulp-util": "^3.0.8",
         "inquirer": "^6.2.0",
+        "jshint": "^2.9.6",
         "semver": "^5.6.0"
     },
     "spm": {
         "main": "Chart.js"
-    },
-    "dependencies": {
-        "gulp-plumber": "^1.2.1",
-        "jshint": "^2.9.6"
     }
 }

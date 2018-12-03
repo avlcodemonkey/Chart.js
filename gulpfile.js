@@ -1,3 +1,5 @@
+/// <binding ProjectOpened='watch' />
+
 var bower = require('./bower.json'),
     concat = require('gulp-concat'),
     exec = require('child_process').exec,
@@ -19,8 +21,7 @@ var srcDir = './src/';
  *    Output: - A built Chart.js file with Core and types Bar, Line and Doughnut concatenated together
  *            - A minified version of this code, in Chart.min.js
  */
-gulp.task('build', function() {
-
+function buildJs() {
     // Default to all of the chart types, with Chart.Core first
     var srcFiles = [FileName('Core')],
         isCustom = !!(util.env.types),
@@ -45,14 +46,14 @@ gulp.task('build', function() {
     function FileName(moduleName) {
         return srcDir + 'Chart.' + moduleName + '.js';
     }
-});
+}
 
 /*
  *    Usage : gulp bump
  *    Prompts: Version increment to bump
  *    Output: - New version number written into package.json & bower.json
  */
-gulp.task('bump', function(complete) {
+function bump(complete) {
     util.log('Current version:', util.colors.cyan(package.version));
     var choices = ['major', 'premajor', 'minor', 'preminor', 'patch', 'prepatch', 'prerelease'].map(function(versionType) {
         return versionType + ' (v' + semver.inc(package.version, versionType) + ')';
@@ -76,26 +77,26 @@ gulp.task('bump', function(complete) {
 
         complete();
     });
-});
+}
 
-gulp.task('release', ['build'], function() {
+function release() {
     exec('git tag -a v' + package.version);
-});
+}
 
-gulp.task('jshint', function() {
+function jsHint() {
     return gulp.src(srcDir + '*.js')
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
-});
+}
 
-gulp.task('library-size', function() {
+function librarySize() {
     return gulp.src('Chart.min.js')
         .pipe(size({
             gzip: true
         }));
-});
+}
 
-gulp.task('module-sizes', function() {
+function moduleSizes() {
     return gulp.src(srcDir + '*.js')
         .pipe(plumber())
         .pipe(uglify())
@@ -103,14 +104,17 @@ gulp.task('module-sizes', function() {
             showFiles: true,
             gzip: true
         }));
-});
+}
 
-gulp.task('watch', function() {
-    gulp.watch('./src/*', ['build']);
-});
+function watchFiles() {
+    gulp.watch('./src/*.js', buildJs);
+}
 
-gulp.task('test', ['jshint']);
-
-gulp.task('size', ['library-size', 'module-sizes']);
-
-gulp.task('default', ['build', 'watch']);
+gulp.task('build', buildJs);
+gulp.task('jshint', jsHint);
+gulp.task('watch', watchFiles);
+gulp.task('test', jsHint);
+gulp.task('bump', bump);
+gulp.task('size', gulp.parallel(librarySize, moduleSizes));
+gulp.task('default', gulp.parallel(buildJs, watchFiles));
+gulp.task('release', gulp.series(buildJs, release));
