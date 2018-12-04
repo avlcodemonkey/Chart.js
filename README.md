@@ -9,12 +9,11 @@ This fork of Chart.js is based off of the 1.1.1 branch of the [original project]
 - Branch: [v1x](https://github.com/avlcodemonkey/Chart.js/tree/v1x)
 
 This somewhat retro version is being tweaked to try to decrease the bundle size and to increase performance. 
-- 
 
-#####Contributing to 1.2.1
+##### Contributing to 1.2.1
 Submit PR's to the v1x branch.
 
-#####Building and Testing
+##### Building and Testing
 `gulp build`, `gulp test`, `gulp watch --test`
 
 ## Bugs, Issues and Contributing
