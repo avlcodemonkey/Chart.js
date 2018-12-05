@@ -97,7 +97,7 @@ See files `sample/pie-customTooltips.html` and `sample/line-customTooltips.html`
 
 Chart.js 1.0 has been rewritten to provide a platform for developers to create their own custom chart types, and be able to share and utilise them through the Chart.js API.
 
-The format is relatively simple, there are a set of utility helper methods under `Chart.helpers`, including things such as looping over collections.
+The format is relatively simple, there are a set of utility helper methods in `ChartHelpers`, including things such as looping over collections.
 
 On top of this, there are also some simple base classes of Chart elements, these all extend from `Chart.Element`, and include things such as points, bars and scales.
 

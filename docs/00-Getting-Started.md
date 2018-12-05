@@ -87,17 +87,6 @@ Chart.defaults.global = {
 	// Boolean - If we should show the scale at all
 	showScale: true,
 
-	// Boolean - If we want to override with a hard coded scale
-	scaleOverride: false,
-
-	// ** Required if scaleOverride is true **
-	// Number - The number of steps in a hard coded scale
-	scaleSteps: null,
-	// Number - The value jump in the hard coded scale
-	scaleStepWidth: null,
-	// Number - The scale starting value
-	scaleStartValue: null,
-
 	// String - Colour of the scale line
 	scaleLineColor: "rgba(0,0,0,.1)",
 

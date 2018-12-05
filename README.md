@@ -10,6 +10,10 @@ This fork of Chart.js is based off of the 1.1.1 branch of the [original project]
 
 This somewhat retro version is being tweaked to try to decrease the bundle size and to increase performance. 
 
+Some features are being removed to accomplish that end:
+- Animation
+- Scale override
+
 ##### Contributing to 1.2.1
 Submit PR's to the v1x branch.
 
