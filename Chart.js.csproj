@@ -78,6 +78,7 @@
     <Content Include="samples\polar-area.html" />
     <Content Include="samples\radar.html" />
     <Content Include="src\Chart.Bar.js" />
+    <Content Include="src\Chart.Helpers.js" />
     <Content Include="src\Chart.Core.js" />
     <Content Include="src\Chart.Doughnut.js" />
     <Content Include="src\Chart.HorizontalBar.js" />

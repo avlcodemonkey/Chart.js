@@ -1,12 +1,8 @@
 /**
  * https://github.com/tomsouthall/Chart.HorizontalBar.js
  */
-(function() {
+(function(root, Chart, helpers) {
     'use strict';
-
-    var root = this,
-        Chart = root.Chart,
-        helpers = Chart.helpers;
 
     var defaultConfig = {
         // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
@@ -260,7 +256,7 @@
 
                             ctx.save();
                             ctx.translate(xPos, (isRotated) ? this.endPoint + 12 : this.endPoint + 8);
-                            ctx.rotate(helpers.radians(this.xLabelRotation) * -1);
+                            ctx.rotate(helpers.toRadians(this.xLabelRotation) * -1);
                             ctx.font = this.font;
                             ctx.textAlign = (isRotated) ? 'right' : 'center';
                             ctx.textBaseline = (isRotated) ? 'middle' : 'top';
@@ -307,7 +303,7 @@
                 this.datasets.push(datasetObject);
 
                 helpers.each(dataset.data, function(dataPoint, index) {
-                    //Add a new point for each piece of data, passing any required data to draw.
+                    // Add a new point for each piece of data, passing any required data to draw.
                     datasetObject.bars.push(new this.BarClass({
                         value: dataPoint,
                         label: data.labels[index],
@@ -500,4 +496,4 @@
             }, this);
         }
     });
-}).call(this);
+}(this, this.Chart, this.ChartHelpers));

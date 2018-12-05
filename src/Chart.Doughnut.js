@@ -1,9 +1,5 @@
-(function() {
+(function(root, Chart, helpers) {
     'use strict';
-
-    var root = this,
-        Chart = root.Chart,
-        helpers = Chart.helpers;
 
     var defaultConfig = {
         // Boolean - Whether we should show a stroke on each segment
@@ -179,4 +175,4 @@
         name: 'Pie',
         defaults: helpers.merge(defaultConfig, { percentageInnerCutout: 0 })
     });
-}).call(this);
+}(this, this.Chart, this.ChartHelpers));

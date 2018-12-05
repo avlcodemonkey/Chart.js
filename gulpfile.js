@@ -23,7 +23,7 @@ var srcDir = './src/';
  */
 function buildJs() {
     // Default to all of the chart types, with Chart.Core first
-    var srcFiles = [FileName('Core')],
+    var srcFiles = [FileName('Helpers'), FileName('Core')],
         isCustom = !!(util.env.types),
         outputDir = (isCustom) ? 'custom' : '.';
     if (isCustom) {

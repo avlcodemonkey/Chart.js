@@ -1,9 +1,5 @@
-(function() {
+(function(root, Chart, helpers) {
     'use strict';
-
-    var root = this,
-        Chart = root.Chart,
-        helpers = Chart.helpers;
 
     Chart.Type.extend({
         name: 'Radar',
@@ -332,4 +328,4 @@
             }, this);
         }
     });
-}).call(this);
+}(this, this.Chart, this.ChartHelpers));

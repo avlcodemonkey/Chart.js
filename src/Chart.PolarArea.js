@@ -1,9 +1,5 @@
-(function() {
+(function(root, Chart, helpers) {
     'use strict';
-
-    var root = this,
-        Chart = root.Chart,
-        helpers = Chart.helpers;
 
     var defaultConfig = {
         // Boolean - Show a backdrop to the scale label
@@ -161,24 +157,15 @@
                 valuesArray.push(segment.value);
             });
 
-            var scaleSizes = (this.options.scaleOverride) ?
-                {
-                    steps: this.options.scaleSteps,
-                    stepValue: this.options.scaleStepWidth,
-                    min: this.options.scaleStartValue,
-                    max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-                } :
+            helpers.extend(
+                this.scale,
                 helpers.calculateScaleRange(
                     valuesArray,
                     helpers.min([this.chart.width, this.chart.height]) / 2,
                     this.options.scaleFontSize,
                     this.options.scaleBeginAtZero,
                     this.options.scaleIntegersOnly
-                );
-
-            helpers.extend(
-                this.scale,
-                scaleSizes,
+                ),
                 {
                     size: helpers.min([this.chart.width, this.chart.height]),
                     xCenter: this.chart.width / 2,
@@ -245,4 +232,4 @@
             this.scale.draw();
         }
     });
-}).call(this);
+}(this, this.Chart, this.ChartHelpers));

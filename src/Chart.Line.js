@@ -1,9 +1,5 @@
-(function() {
+(function(root, Chart, helpers) {
     'use strict';
-
-    var root = this,
-        Chart = root.Chart,
-        helpers = Chart.helpers;
 
     var defaultConfig = {
         // Boolean - Whether grid lines are shown across the chart
@@ -360,4 +356,4 @@
             }, this);
         }
     });
-}).call(this);
+}(this, this.Chart, this.ChartHelpers));
