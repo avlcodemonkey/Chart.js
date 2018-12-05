@@ -18,6 +18,7 @@
         this.width = computeDimension(context.canvas, 'Width') || context.canvas.width;
         this.height = computeDimension(context.canvas, 'Height') || context.canvas.height;
         this.aspectRatio = this.width / this.height;
+
         // High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
         helpers.retinaScale(this);
 
@@ -143,23 +144,31 @@
     // Create a dictionary of chart types, to allow for extension of existing types
     Chart.types = {};
 
-
-    //Store a reference to each instance - allowing us to globally resize chart instances on window resize.
-    //Destroy method on the chart will remove the instance of the chart from this reference.
-    Chart.instances = {};
-
     Chart.Type = function(data, options, chart) {
         this.options = options;
         this.chart = chart;
-        this.id = uid();
-        //Add the chart instance to the global namespace
-        Chart.instances[this.id] = this;
+        this.id = helpers.uid();
+        this.events = {};
 
-        // Initialize is always called when a chart type is created
-        // By default it is a no op, but it should be extended
         if (options.responsive) {
             this.resize();
+            if (root) {
+                var self = this;
+                self.events['windowResize'] = (function() {
+                    // Basic debounce of resize function so it doesn't hurt performance when resizing browser.
+                    var timeout;
+                    return function() {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(function() {
+                            self.resize(self.render, true);
+                        }, 50);
+                    };
+                })();
+                root.addEventListener('resize', self.events['windowResize']);
+            }
         }
+
+        // Initialize is always called when a chart type is created. By default it is a no op, but it should be extended
         this.initialize.call(this, data);
     };
 
