@@ -30,17 +30,6 @@
             // Boolean - If we should show the scale at all
             showScale: true,
 
-            // Boolean - If we want to override with a hard coded scale
-            scaleOverride: false,
-
-            // ** Required if scaleOverride is true **
-            // Number - The number of steps in a hard coded scale
-            scaleSteps: null,
-            // Number - The value jump in the hard coded scale
-            scaleStepWidth: null,
-            // Number - The scale starting value
-            scaleStartValue: null,
-
             // String - Colour of the scale line
             scaleLineColor: 'rgba(0,0,0,.1)',
 
@@ -1225,25 +1214,6 @@
         }
     });
 
-    // Attach global event to resize each chart instance when the browser resizes
-    helpers.addEvent(window, "resize", (function() {
-        // Basic debounce of resize function so it doesn't hurt performance when resizing browser.
-        var timeout;
-        return function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-                each(Chart.instances, function(instance) {
-                    // If the responsive flag is set in the chart instance config
-                    // Cascade the resize event down to the chart.
-                    if (instance.options.responsive) {
-                        instance.resize(instance.render, true);
-                    }
-                });
-            }, 50);
-        };
-    })());
-
-
     if (typeof define === 'function' && define.amd) {
         define('Chart', [], function() {
             return Chart;
@@ -1253,10 +1223,8 @@
     }
 
     root.Chart = Chart;
-
     Chart.noConflict = function() {
         root.Chart = previous;
         return Chart;
     };
-
-}).call(this);
+}(this, this.ChartHelpers));

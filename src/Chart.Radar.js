@@ -209,26 +209,16 @@
                 return totalDataArray;
             })();
 
-            var scaleSizes = (this.options.scaleOverride) ?
-                {
-                    steps: this.options.scaleSteps,
-                    stepValue: this.options.scaleStepWidth,
-                    min: this.options.scaleStartValue,
-                    max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-                } :
+            helpers.extend(
+                this.scale,
                 helpers.calculateScaleRange(
                     valuesArray,
                     helpers.min([this.chart.width, this.chart.height]) / 2,
                     this.options.scaleFontSize,
                     this.options.scaleBeginAtZero,
                     this.options.scaleIntegersOnly
-                );
-
-            helpers.extend(
-                this.scale,
-                scaleSizes
+                )
             );
-
         },
 
         addData: function(valuesArray, label) {

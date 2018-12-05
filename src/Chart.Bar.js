@@ -183,7 +183,7 @@
                 return values;
             };
 
-            var scaleOptions = {
+            this.scale = new this.ScaleClass({
                 templateString: this.options.scaleLabel,
                 height: this.chart.height,
                 width: this.chart.width,
@@ -217,19 +217,7 @@
                 padding: (this.options.showScale) ? 0 : (this.options.barShowStroke) ? this.options.barStrokeWidth : 0,
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
-            };
-
-            if (this.options.scaleOverride) {
-                helpers.extend(scaleOptions, {
-                    calculateYRange: helpers.noop,
-                    steps: this.options.scaleSteps,
-                    stepValue: this.options.scaleStepWidth,
-                    min: this.options.scaleStartValue,
-                    max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-                });
-            }
-
-            this.scale = new this.ScaleClass(scaleOptions);
+            });
         },
 
         addData: function(valuesArray, label) {
