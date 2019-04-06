@@ -11,36 +11,6 @@ First we need to include the Chart.js library on the page. The library occupies 
 <script src="Chart.js"></script>
 ```
 
-Alternatively, if you're using an AMD loader for JavaScript modules, that is also supported in the Chart.js core. Please note: the library will still occupy a global variable of `Chart`, even if it detects `define` and `define.amd`. If this is a problem, you can call `noConflict` to restore the global Chart variable to its previous owner.
-
-```javascript
-// Using requirejs
-require(['path/to/Chartjs'], function(Chart){
-	// Use Chart.js as normal here.
-
-	// Chart.noConflict restores the Chart global variable to its previous owner
-	// The function returns what was previously Chart, allowing you to reassign.
-	var Chartjs = Chart.noConflict();
-
-});
-```
-
-You can also grab Chart.js using bower:
-
-```bash
-bower install Chart.js --save
-```
-
-or NPM:
-
-```bash
-npm install chart.js --save
-```
-
-Also, Chart.js is available from CDN:
-
-https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js
-
 ###Creating a chart
 
 To create a chart, we need to instantiate the `Chart` class. To do this, we need to pass in the 2d context of where we want to draw the chart. Here's an example.
@@ -84,6 +54,9 @@ http://ejohn.org/blog/javascript-micro-templating/
 
 ```javascript
 Chart.defaults.global = {
+	// String - Font family for scale, tooltips, points, etc
+	fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
 	// Boolean - If we should show the scale at all
 	showScale: true,
 
@@ -105,9 +78,6 @@ Chart.defaults.global = {
 	// Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
 	scaleBeginAtZero: false,
 
-	// String - Scale label font declaration for the scale label
-	scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
 	// Number - Scale label font size in pixels
 	scaleFontSize: 12,
 
@@ -117,26 +87,17 @@ Chart.defaults.global = {
 	// String - Scale label font colour
 	scaleFontColor: "#666",
 
-	// Boolean - whether or not the chart should be responsive and resize when the browser does.
-	responsive: false,
-
-	// Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+	// Boolean - whether to maintain the starting aspect ratio or not, if set to false, will take up entire container
 	maintainAspectRatio: true,
 
 	// Boolean - Determines whether to draw tooltips on the canvas or not
 	showTooltips: true,
-
-	// Function - Determines whether to execute the customTooltips function instead of drawing the built in tooltips (See [Advanced - External Tooltips](#advanced-usage-external-tooltips))
-	customTooltips: false,
 
 	// Array - Array of string names to attach tooltip events
 	tooltipEvents: ["mousemove", "touchstart", "touchmove"],
 
 	// String - Tooltip background colour
 	tooltipFillColor: "rgba(0,0,0,0.8)",
-
-	// String - Tooltip label font declaration for the scale label
-	tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
 
 	// Number - Tooltip label font size in pixels
 	tooltipFontSize: 14,
@@ -146,9 +107,6 @@ Chart.defaults.global = {
 
 	// String - Tooltip label font colour
 	tooltipFontColor: "#fff",
-
-	// String - Tooltip title font declaration for the scale label
-	tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
 
 	// Number - Tooltip title font size in pixels
 	tooltipTitleFontSize: 14,
@@ -184,14 +142,6 @@ Chart.defaults.global = {
 	multiTooltipTemplate: "<%= value %>",
 }
 ```
-
-If for example, you wanted all charts created to be responsive, and resize when the browser window does, the following setting can be changed:
-
-```javascript
-Chart.defaults.global.responsive = true;
-```
-
-Now, every time we create a chart, `options.responsive` will be `true`.
 
 ###Tooltip Templates
 For the `tooltipTemplate` and `multiTooltipTemplate` configuration options, you may use special template blocks. **Do not use user input in the tooltip template, as it may be executed as raw JavaScript.**

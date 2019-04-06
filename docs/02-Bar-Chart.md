@@ -128,22 +128,3 @@ myBarChart.datasets[0].bars[2].value = 50;
 myBarChart.update();
 // Calling update now updates the position of March from 90 to 50.
 ```
-
-#### .addData( valuesArray, label )
-
-Calling `addData(valuesArray, label)` on your Chart instance passing an array of values for each dataset, along with a label for those bars.
-
-```javascript
-// The values array passed into addData should be one for each dataset in the chart
-myBarChart.addData([40, 60], "August");
-// The new data will now display at the end of the chart.
-```
-
-#### .removeData( )
-
-Calling `removeData()` on your Chart instance will remove the first value for all datasets on the chart.
-
-```javascript
-myBarChart.removeData();
-// The chart will now update and remove the first bar
-```

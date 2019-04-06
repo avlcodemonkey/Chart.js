@@ -1,22 +1,12 @@
 (function(root, helpers) {
     'use strict';
 
-    var previous = root.Chart;
-
-    var computeDimension = function(element, dimension) {
-        if (element['offset' + dimension]) {
-            return element['offset' + dimension];
-        } else {
-            return document.defaultView.getComputedStyle(element).getPropertyValue(dimension);
-        }
-    };
-
     // Occupy the global variable of Chart, and create a simple base class
     var Chart = function(context) {
         this.canvas = context.canvas;
         this.ctx = context;
-        this.width = computeDimension(context.canvas, 'Width') || context.canvas.width;
-        this.height = computeDimension(context.canvas, 'Height') || context.canvas.height;
+        this.width = context.canvas.offsetWidth || context.canvas.width;
+        this.height = context.canvas.offsetHeight || context.canvas.height;
         this.aspectRatio = this.width / this.height;
 
         // High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
@@ -28,6 +18,9 @@
     // Globally expose the defaults to allow for user updating/changing
     Chart.defaults = {
         global: {
+            // String - Font family for scale, tooltips, points, etc
+            fontFamily: '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+
             // Boolean - If we should show the scale at all
             showScale: true,
 
@@ -52,9 +45,6 @@
             // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
             scaleBeginAtZero: false,
 
-            // String - Scale label font declaration for the scale label
-            scaleFontFamily: '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-
             // Number - Scale label font size in pixels
             scaleFontSize: 12,
 
@@ -64,26 +54,17 @@
             // String - Scale label font colour
             scaleFontColor: '#666',
 
-            // Boolean - whether or not the chart should be responsive and resize when the browser does.
-            responsive: true,
-
             // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
             maintainAspectRatio: false,
 
             // Boolean - Determines whether to draw tooltips on the canvas or not - attaches events to touchmove & mousemove
             showTooltips: true,
 
-            // Boolean - Determines whether to draw built-in tooltip or call custom tooltip function
-            customTooltips: false,
-
             // Array - Array of string names to attach tooltip events
             tooltipEvents: ['mousemove', 'touchstart', 'touchmove', 'mouseout'],
 
             // String - Tooltip background colour
             tooltipFillColor: 'rgba(0,0,0,0.8)',
-
-            // String - Tooltip label font declaration for the scale label
-            tooltipFontFamily: '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 
             // Number - Tooltip label font size in pixels
             tooltipFontSize: 12,
@@ -93,9 +74,6 @@
 
             // String - Tooltip label font colour
             tooltipFontColor: '#fff',
-
-            // String - Tooltip title font declaration for the scale label
-            tooltipTitleFontFamily: '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 
             // Number - Tooltip title font size in pixels
             tooltipTitleFontSize: 14,
@@ -150,22 +128,20 @@
         this.id = helpers.uid();
         this.events = {};
 
-        if (options.responsive) {
-            this.resize();
-            if (root) {
-                var self = this;
-                self.events['windowResize'] = (function() {
-                    // Basic debounce of resize function so it doesn't hurt performance when resizing browser.
-                    var timeout;
-                    return function() {
-                        clearTimeout(timeout);
-                        timeout = setTimeout(function() {
-                            self.resize(self.render, true);
-                        }, 50);
-                    };
-                })();
-                root.addEventListener('resize', self.events['windowResize']);
-            }
+        this.resize();
+        if (root) {
+            var self = this;
+            self.events.windowResize = (function() {
+                // Basic debounce of resize function so it doesn't hurt performance when resizing browser.
+                var timeout;
+                return function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                        self.resize(self.render, true);
+                    }, 50);
+                };
+            })();
+            root.addEventListener('resize', self.events.windowResize);
         }
 
         // Initialize is always called when a chart type is created. By default it is a no op, but it should be extended
@@ -193,18 +169,16 @@
 
             helpers.retinaScale(this.chart);
 
-            if (typeof callback === 'function') {
+            if (typeof callback === 'function')
                 callback.apply(this, Array.prototype.slice.call(arguments, 1));
-            }
             return this;
         },
 
         reflow: helpers.noop,
 
         render: function(reflow) {
-            if (reflow) {
+            if (reflow)
                 this.reflow();
-            }
             this.draw();
             return this;
         },
@@ -227,9 +201,8 @@
 
         showTooltip: function(chartElements) {
             // Only redraw the chart if we've actually changed what we're hovering on.
-            if (typeof this.activeElements === 'undefined') {
+            if (typeof this.activeElements === 'undefined')
                 this.activeElements = [];
-            }
 
             var isChanged = (function(elements) {
                 var changed = false;
@@ -240,22 +213,17 @@
                 }
 
                 helpers.each(elements, function(element, index) {
-                    if (element !== this.activeElements[index]) {
+                    if (element !== this.activeElements[index])
                         changed = true;
-                    }
                 }, this);
                 return changed;
             }).call(this, chartElements);
 
-            if (!isChanged) {
+            if (!isChanged)
                 return;
-            }
 
             this.activeElements = chartElements;
             this.draw();
-            if (this.options.customTooltips) {
-                this.options.customTooltips(false);
-            }
             if (chartElements.length > 0) {
                 // If we have multiple datasets, show a MultiTooltip for all of the data points at that index
                 if (this.datasets && this.datasets.length > 1) {
@@ -265,9 +233,8 @@
                     for (var i = this.datasets.length - 1; i >= 0; i--) {
                         dataArray = this.datasets[i].points || this.datasets[i].bars || this.datasets[i].segments;
                         dataIndex = dataArray.indexOf(chartElements[0]);
-                        if (dataIndex !== -1) {
+                        if (dataIndex !== -1)
                             break;
-                        }
                     }
                     var tooltipLabels = [],
                         tooltipColors = [],
@@ -297,7 +264,6 @@
                                     fill: element._saved.fillColor || element.fillColor,
                                     stroke: element._saved.strokeColor || element.strokeColor
                                 });
-
                             }, this);
 
                             yMin = helpers.min(yPositions);
@@ -319,11 +285,10 @@
                         xOffset: this.options.tooltipXOffset,
                         fillColor: this.options.tooltipFillColor,
                         textColor: this.options.tooltipFontColor,
-                        fontFamily: this.options.tooltipFontFamily,
+                        fontFamily: this.options.fontFamily,
                         fontStyle: this.options.tooltipFontStyle,
                         fontSize: this.options.tooltipFontSize,
                         titleTextColor: this.options.tooltipTitleFontColor,
-                        titleFontFamily: this.options.tooltipTitleFontFamily,
                         titleFontStyle: this.options.tooltipTitleFontStyle,
                         titleFontSize: this.options.tooltipTitleFontSize,
                         cornerRadius: this.options.tooltipCornerRadius,
@@ -332,8 +297,7 @@
                         legendColorBackground: this.options.multiTooltipKeyBackground,
                         title: helpers.template(this.options.tooltipTitleTemplate, chartElements[0]),
                         chart: this.chart,
-                        ctx: this.chart.ctx,
-                        custom: this.options.customTooltips
+                        ctx: this.chart.ctx
                     }).draw();
                 } else {
                     helpers.each(chartElements, function(element) {
@@ -345,14 +309,13 @@
                             yPadding: this.options.tooltipYPadding,
                             fillColor: this.options.tooltipFillColor,
                             textColor: this.options.tooltipFontColor,
-                            fontFamily: this.options.tooltipFontFamily,
+                            fontFamily: this.options.fontFamily,
                             fontStyle: this.options.tooltipFontStyle,
                             fontSize: this.options.tooltipFontSize,
                             caretHeight: this.options.tooltipCaretSize,
                             cornerRadius: this.options.tooltipCornerRadius,
                             text: helpers.template(this.options.tooltipTemplate, element),
-                            chart: this.chart,
-                            custom: this.options.customTooltips
+                            chart: this.chart
                         }).draw();
                     }, this);
                 }
@@ -392,8 +355,7 @@
 
             // Register this new chart type in the Chart prototype
             Chart.prototype[chartName] = function(data, options) {
-                var config = helpers.merge(Chart.defaults.global, Chart.defaults[chartName], options || {});
-                return new ChartType(data, config, this);
+                return new ChartType(data, helpers.merge(Chart.defaults.global, Chart.defaults[chartName], options || {}), this);
             };
         } else {
             root.console.warn('Name not provided for this chart, so it hasnt been registered');
@@ -409,21 +371,23 @@
 
     helpers.extend(Chart.Element.prototype, {
         initialize: function() { },
+
         restore: function(props) {
-            if (!props) {
+            if (!props)
                 helpers.extend(this, this._saved);
-            } else {
+            else
                 helpers.each(props, function(key) {
                     this[key] = this._saved[key];
                 }, this);
-            }
             return this;
         },
+
         save: function() {
             this._saved = helpers.clone(this);
             delete this._saved._saved;
             return this;
         },
+
         update: function(newProps) {
             helpers.each(newProps, function(value, key) {
                 this._saved[key] = this[key];
@@ -431,18 +395,21 @@
             }, this);
             return this;
         },
+
         transition: function(props, ease) {
             helpers.each(props, function(value, key) {
                 this[key] = ((value - this._saved[key]) * ease) + this._saved[key];
             }, this);
             return this;
         },
+
         tooltipPosition: function() {
             return {
                 x: this.x,
                 y: this.y
             };
         },
+
         hasValue: function() {
             return helpers.isNumber(this.value);
         }
@@ -454,6 +421,7 @@
         inRange: function(chartX, chartY) {
             return ((Math.pow(chartX - this.x, 2) + Math.pow(chartY - this.y, 2)) < Math.pow(this.hitDetectionRadius + this.radius, 2));
         },
+
         draw: function() {
             var ctx = this.ctx;
             ctx.beginPath();
@@ -491,6 +459,7 @@
             // Ensure within the outside of the arc centre, but inside arc outer
             return (betweenAngles && withinRadius);
         },
+
         tooltipPosition: function() {
             var centreAngle = this.startAngle + ((this.endAngle - this.startAngle) / 2),
                 rangeFromCentre = (this.outerRadius - this.innerRadius) / 2 + this.innerRadius;
@@ -499,6 +468,7 @@
                 y: this.y + (Math.sin(centreAngle) * rangeFromCentre)
             };
         },
+
         draw: function() {
             var ctx = this.ctx;
             ctx.beginPath();
@@ -512,9 +482,8 @@
             ctx.fill();
             ctx.lineJoin = 'bevel';
 
-            if (this.showStroke) {
+            if (this.showStroke)
                 ctx.stroke();
-            }
         }
     });
 
@@ -545,15 +514,18 @@
             ctx.lineTo(rightX, top);
             ctx.lineTo(rightX, this.base);
             ctx.fill();
-            if (this.showStroke) {
+            if (this.showStroke)
                 ctx.stroke();
-            }
         },
+
         height: function() {
             return this.base - this.y;
         },
+
         inRange: function(chartX, chartY) {
-            return (chartX >= this.x - this.width / 2 && chartX <= this.x + this.width / 2) && (chartY >= this.y && chartY <= this.base);
+            // incorporate vertical padding so tooltips will be visible when value is zero
+            var yPadding = this.value === 0 ? 1 : 0;
+            return (chartX >= this.x - this.width / 2 && chartX <= this.x + this.width / 2) && (chartY >= this.y - yPadding && chartY <= this.base + yPadding);
         }
     });
 
@@ -571,70 +543,63 @@
                 tooltipRectHeight = this.fontSize + 2 * this.yPadding,
                 tooltipHeight = tooltipRectHeight + this.caretHeight + caretPadding;
 
-            if (this.x + tooltipWidth / 2 > this.chart.width) {
+            if (this.x + tooltipWidth / 2 > this.chart.width)
                 this.xAlign = 'left';
-            } else if (this.x - tooltipWidth / 2 < 0) {
+            else if (this.x - tooltipWidth / 2 < 0)
                 this.xAlign = 'right';
-            }
 
-            if (this.y - tooltipHeight < 0) {
+            if (this.y - tooltipHeight < 0)
                 this.yAlign = 'below';
-            }
 
             var tooltipX = this.x - tooltipWidth / 2,
                 tooltipY = this.y - tooltipHeight;
 
             ctx.fillStyle = this.fillColor;
 
-            // Custom Tooltips
-            if (this.custom) {
-                this.custom(this);
-            } else {
-                switch (this.yAlign) {
-                    case 'above':
-                        // Draw a caret above the x/y
-                        ctx.beginPath();
-                        ctx.moveTo(this.x, this.y - caretPadding);
-                        ctx.lineTo(this.x + this.caretHeight, this.y - (caretPadding + this.caretHeight));
-                        ctx.lineTo(this.x - this.caretHeight, this.y - (caretPadding + this.caretHeight));
-                        ctx.closePath();
-                        ctx.fill();
-                        break;
-                    case 'below':
-                        tooltipY = this.y + caretPadding + this.caretHeight;
-                        // Draw a caret below the x/y
-                        ctx.beginPath();
-                        ctx.moveTo(this.x, this.y + caretPadding);
-                        ctx.lineTo(this.x + this.caretHeight, this.y + caretPadding + this.caretHeight);
-                        ctx.lineTo(this.x - this.caretHeight, this.y + caretPadding + this.caretHeight);
-                        ctx.closePath();
-                        ctx.fill();
-                        break;
-                }
-
-                switch (this.xAlign) {
-                    case 'left':
-                        tooltipX = this.x - tooltipWidth + (this.cornerRadius + this.caretHeight);
-                        break;
-                    case 'right':
-                        tooltipX = this.x - (this.cornerRadius + this.caretHeight);
-                        break;
-                }
-
-                helpers.drawRoundedRectangle(ctx, tooltipX, tooltipY, tooltipWidth, tooltipRectHeight, this.cornerRadius);
-                ctx.fill();
-                ctx.fillStyle = this.textColor;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(this.text, tooltipX + tooltipWidth / 2, tooltipY + tooltipRectHeight / 2);
+            switch (this.yAlign) {
+                case 'above':
+                    // Draw a caret above the x/y
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y - caretPadding);
+                    ctx.lineTo(this.x + this.caretHeight, this.y - (caretPadding + this.caretHeight));
+                    ctx.lineTo(this.x - this.caretHeight, this.y - (caretPadding + this.caretHeight));
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+                case 'below':
+                    tooltipY = this.y + caretPadding + this.caretHeight;
+                    // Draw a caret below the x/y
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y + caretPadding);
+                    ctx.lineTo(this.x + this.caretHeight, this.y + caretPadding + this.caretHeight);
+                    ctx.lineTo(this.x - this.caretHeight, this.y + caretPadding + this.caretHeight);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
             }
+
+            switch (this.xAlign) {
+                case 'left':
+                    tooltipX = this.x - tooltipWidth + (this.cornerRadius + this.caretHeight);
+                    break;
+                case 'right':
+                    tooltipX = this.x - (this.cornerRadius + this.caretHeight);
+                    break;
+            }
+
+            helpers.drawRoundedRectangle(ctx, tooltipX, tooltipY, tooltipWidth, tooltipRectHeight, this.cornerRadius);
+            ctx.fill();
+            ctx.fillStyle = this.textColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(this.text, tooltipX + tooltipWidth / 2, tooltipY + tooltipRectHeight / 2);
         }
     });
 
     Chart.MultiTooltip = Chart.Element.extend({
         initialize: function() {
             this.font = helpers.fontString(this.fontSize, this.fontStyle, this.fontFamily);
-            this.titleFont = helpers.fontString(this.titleFontSize, this.titleFontStyle, this.titleFontFamily);
+            this.titleFont = helpers.fontString(this.titleFontSize, this.titleFontStyle, this.fontFamily);
             this.titleHeight = this.title ? this.titleFontSize * 1.5 : 0;
             this.height = (this.labels.length * this.fontSize) + ((this.labels.length - 1) * (this.fontSize / 2)) + (this.yPadding * 2) + this.titleHeight;
             this.ctx.font = this.titleFont;
@@ -648,19 +613,18 @@
 
             var halfHeight = this.height / 2;
             // Check to ensure the height will fit on the canvas
-            if (this.y - halfHeight < 0) {
+            if (this.y - halfHeight < 0)
                 this.y = halfHeight;
-            } else if (this.y + halfHeight > this.chart.height) {
+            else if (this.y + halfHeight > this.chart.height)
                 this.y = this.chart.height - halfHeight;
-            }
 
             // Decide whether to align left or right based on position on canvas
-            if (this.x > this.chart.width / 2) {
+            if (this.x > this.chart.width / 2)
                 this.x -= this.xOffset + this.width;
-            } else {
+            else
                 this.x += this.xOffset;
-            }
         },
+
         getLineHeight: function(index) {
             var baseLineHeight = this.y - (this.height / 2) + this.yPadding,
                 afterTitleIndex = index - 1;
@@ -668,31 +632,27 @@
             return index === 0 ? (baseLineHeight + this.titleHeight / 3) :
                 (baseLineHeight + ((this.fontSize * 1.5 * afterTitleIndex) + this.fontSize / 2) + this.titleHeight);
         },
-        draw: function() {
-            // Custom Tooltips
-            if (this.custom) {
-                this.custom(this);
-            } else {
-                helpers.drawRoundedRectangle(this.ctx, this.x, this.y - this.height / 2, this.width, this.height, this.cornerRadius);
-                var ctx = this.ctx;
-                ctx.fillStyle = this.fillColor;
-                ctx.fill();
-                ctx.closePath();
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = this.titleTextColor;
-                ctx.font = this.titleFont;
-                ctx.fillText(this.title, this.x + this.xPadding, this.getLineHeight(0));
-                ctx.font = this.font;
 
-                helpers.each(this.labels, function(label, index) {
-                    ctx.fillStyle = this.textColor;
-                    ctx.fillText(label, this.x + this.xPadding + this.fontSize + 3, this.getLineHeight(index + 1));
-                    ctx.clearRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize / 2, this.fontSize, this.fontSize);
-                    ctx.fillStyle = this.legendColors[index].fill;
-                    ctx.fillRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize / 2, this.fontSize, this.fontSize);
-                }, this);
-            }
+        draw: function() {
+            helpers.drawRoundedRectangle(this.ctx, this.x, this.y - this.height / 2, this.width, this.height, this.cornerRadius);
+            var ctx = this.ctx;
+            ctx.fillStyle = this.fillColor;
+            ctx.fill();
+            ctx.closePath();
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = this.titleTextColor;
+            ctx.font = this.titleFont;
+            ctx.fillText(this.title, this.x + this.xPadding, this.getLineHeight(0));
+            ctx.font = this.font;
+
+            helpers.each(this.labels, function(label, index) {
+                ctx.fillStyle = this.textColor;
+                ctx.fillText(label, this.x + this.xPadding + this.fontSize + 3, this.getLineHeight(index + 1));
+                ctx.clearRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize / 2, this.fontSize, this.fontSize);
+                ctx.fillStyle = this.legendColors[index].fill;
+                ctx.fillRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize / 2, this.fontSize, this.fontSize);
+            }, this);
         }
     });
 
@@ -700,25 +660,15 @@
         initialize: function() {
             this.fit();
         },
+
         buildYLabels: function() {
             this.yLabels = [];
-
             var stepDecimalPlaces = helpers.getDecimalPlaces(this.stepValue);
-            for (var i = 0; i <= this.steps; i++) {
+            for (var i = 0; i <= this.steps; i++)
                 this.yLabels.push(helpers.template(this.templateString, { value: (this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces) }));
-            }
             this.yLabelWidth = (this.display && this.showLabels) ? helpers.longestText(this.ctx, this.font, this.yLabels) + 10 : 0;
         },
-        addXLabel: function(label) {
-            this.xLabels.push(label);
-            this.valuesCount++;
-            this.fit();
-        },
-        removeXLabel: function() {
-            this.xLabels.shift();
-            this.valuesCount--;
-            this.fit();
-        },
+
         // Fitting loop to rotate x Labels and figure out what fits there, and also calculate how many Y steps to use
         fit: function() {
             // First we need the width of the yLabels, assuming the xLabels aren't rotated
@@ -768,8 +718,8 @@
                     this.calculateXLabelRotation();
                 }
             }
-
         },
+
         calculateXLabelRotation: function() {
             //Get the width of each grid by calculating the difference
             //between x offsets between 0 and 1.
@@ -779,7 +729,6 @@
             var firstWidth = this.ctx.measureText(this.xLabels[0]).width,
                 lastWidth = this.ctx.measureText(this.xLabels[this.xLabels.length - 1]).width,
                 firstRotated;
-
 
             this.xScalePaddingRight = lastWidth / 2 + 3;
             this.xScalePaddingLeft = (firstWidth / 2 > this.yLabelWidth) ? firstWidth / 2 : this.yLabelWidth;
@@ -798,45 +747,47 @@
                     firstRotated = cosRotation * firstWidth;
 
                     // We're right aligning the text now.
-                    if (firstRotated + this.fontSize / 2 > this.yLabelWidth) {
+                    if (firstRotated + this.fontSize / 2 > this.yLabelWidth)
                         this.xScalePaddingLeft = firstRotated + this.fontSize / 2;
-                    }
                     this.xScalePaddingRight = this.fontSize / 2;
                     this.xLabelRotation++;
                     this.xLabelWidth = cosRotation * originalLabelWidth;
                 }
-                if (this.xLabelRotation > 0) {
+                if (this.xLabelRotation > 0)
                     this.endPoint -= Math.sin(helpers.toRadians(this.xLabelRotation)) * originalLabelWidth + 3;
-                }
             } else {
                 this.xLabelWidth = 0;
                 this.xScalePaddingRight = this.padding;
                 this.xScalePaddingLeft = this.padding;
             }
-
         },
+
         // Needs to be overidden in each Chart type. Otherwise we need to pass all the data into the scale class
         calculateYRange: helpers.noop,
+
         drawingArea: function() {
             return this.startPoint - this.endPoint;
         },
+
         calculateY: function(value) {
             var scalingFactor = this.drawingArea() / (this.min - this.max);
             return this.endPoint - (scalingFactor * (value - this.min));
         },
+
         calculateX: function(index) {
             var innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
                 valueWidth = innerWidth / Math.max((this.valuesCount - ((this.offsetGridLines) ? 0 : 1)), 1),
                 valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
-            if (this.offsetGridLines) {
+            if (this.offsetGridLines)
                 valueOffset += (valueWidth / 2);
-            }
             return Math.round(valueOffset);
         },
+
         update: function(newProps) {
             helpers.extend(this, newProps);
             this.fit();
         },
+
         draw: function() {
             var ctx = this.ctx,
                 yLabelGap = (this.endPoint - this.startPoint) / this.steps,
@@ -851,18 +802,15 @@
 
                     ctx.textAlign = 'right';
                     ctx.textBaseline = 'middle';
-                    if (this.showLabels) {
+                    if (this.showLabels)
                         ctx.fillText(labelString, xStart - 10, yLabelCenter);
-                    }
 
                     // This is X axis, so draw it
-                    if (index === 0 && !drawHorizontalLine) {
+                    if (index === 0 && !drawHorizontalLine)
                         drawHorizontalLine = true;
-                    }
 
-                    if (drawHorizontalLine) {
+                    if (drawHorizontalLine)
                         ctx.beginPath();
-                    }
 
                     if (index > 0) {
                         // This is a grid line in the centre, so drop that
@@ -890,7 +838,6 @@
                     ctx.lineTo(xStart, linePositionY);
                     ctx.stroke();
                     ctx.closePath();
-
                 }, this);
 
                 //  xLabelsSkipper is a number which if gives 0 as remainder [ indexof(xLabel)/xLabelsSkipper ], we print xLabels, otherwise, we skip it
@@ -904,13 +851,11 @@
                         drawVerticalLine = this.showVerticalLines;
 
                     // This is Y axis, so draw it
-                    if (index === 0 && !drawVerticalLine) {
+                    if (index === 0 && !drawVerticalLine)
                         drawVerticalLine = true;
-                    }
 
-                    if (drawVerticalLine) {
+                    if (drawVerticalLine)
                         ctx.beginPath();
-                    }
 
                     if (index > 0) {
                         // This is a grid line in the centre, so drop that
@@ -947,9 +892,8 @@
                     ctx.font = this.font;
                     ctx.textAlign = isRotated ? 'right' : 'center';
                     ctx.textBaseline = isRotated ? 'middle' : 'top';
-                    if (index % this.xLabelsSkipper === 0) {
+                    if (index % this.xLabelsSkipper === 0)
                         ctx.fillText(label, 0, 0);
-                    }
                     ctx.restore();
                 }, this);
             }
@@ -961,28 +905,31 @@
             this.size = helpers.min([this.height, this.width]);
             this.drawingArea = (this.display) ? (this.size / 2) - (this.fontSize / 2 + this.backdropPaddingY) : (this.size / 2);
         },
+
         calculateCenterOffset: function(value) {
             // Take into account half font size + the yPadding of the top value
             return (value - this.min) * (this.drawingArea / (this.max - this.min));
         },
+
         update: function() {
-            if (!this.lineArc) {
+            if (!this.lineArc)
                 this.setScaleSize();
-            } else {
+            else
                 this.drawingArea = (this.display) ? (this.size / 2) - (this.fontSize / 2 + this.backdropPaddingY) : (this.size / 2);
-            }
             this.buildYLabels();
         },
+
         buildYLabels: function() {
             this.yLabels = [];
             var stepDecimalPlaces = helpers.getDecimalPlaces(this.stepValue);
-            for (var i = 0; i <= this.steps; i++) {
+            for (var i = 0; i <= this.steps; i++)
                 this.yLabels.push(helpers.template(this.templateString, { value: (this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces) }));
-            }
         },
+
         getCircumference: function() {
             return ((Math.PI * 2) / this.valuesCount);
         },
+
         setScaleSize: function() {
             /*
 			 * Right, this is really confusing and there is a lot of maths going on here
@@ -1029,7 +976,7 @@
                 xProtrusionRight,
                 radiusReductionRight,
                 radiusReductionLeft;
-            this.ctx.font = helpers.fontString(this.pointLabelFontSize, this.pointLabelFontStyle, this.pointLabelFontFamily);
+            this.ctx.font = helpers.fontString(this.pointLabelFontSize, this.pointLabelFontStyle, this.fontFamily);
             for (i = 0; i < this.valuesCount; i++) {
                 // 5px to space the text slightly out - similar to what we do in the draw function.
                 pointPosition = this.getPointPosition(i, largestPossibleRadius);
@@ -1076,6 +1023,7 @@
             this.drawingArea = largestPossibleRadius - (radiusReductionLeft + radiusReductionRight) / 2;
             this.setCenterPoint(radiusReductionLeft, radiusReductionRight);
         },
+
         setCenterPoint: function(leftMovement, rightMovement) {
             var maxRight = this.width - rightMovement - this.drawingArea,
                 maxLeft = leftMovement + this.drawingArea;
@@ -1088,6 +1036,7 @@
             // Start from the top instead of right, so remove a quarter of the circle
             return index * ((Math.PI * 2) / this.valuesCount) - (Math.PI / 2);
         },
+
         getPointPosition: function(index, distanceFromCenter) {
             var thisAngle = this.getIndexAngle(index);
             return {
@@ -1095,11 +1044,12 @@
                 y: (Math.sin(thisAngle) * distanceFromCenter) + this.yCenter
             };
         },
+
         draw: function() {
             if (this.display) {
                 var ctx = this.ctx;
                 helpers.each(this.yLabels, function(label, index) {
-                    // Don't draw a centre value
+                    // Don't draw a center value
                     if (index > 0) {
                         var yCenterOffset = index * (this.drawingArea / this.steps),
                             yHeight = this.yCenter - yCenterOffset,
@@ -1119,11 +1069,10 @@
                                 ctx.beginPath();
                                 for (var i = 0; i < this.valuesCount; i++) {
                                     pointPosition = this.getPointPosition(i, this.calculateCenterOffset(this.min + (index * this.stepValue)));
-                                    if (i === 0) {
+                                    if (i === 0)
                                         ctx.moveTo(pointPosition.x, pointPosition.y);
-                                    } else {
+                                    else
                                         ctx.lineTo(pointPosition.x, pointPosition.y);
-                                    }
                                 }
                                 ctx.closePath();
                                 ctx.stroke();
@@ -1166,12 +1115,10 @@
                         }
 
                         if (this.backgroundColors && this.backgroundColors.length === this.valuesCount) {
-                            if (centerOffset === null) {
+                            if (centerOffset === null)
                                 centerOffset = this.calculateCenterOffset(this.max);
-                            }
-                            if (outerPosition === null) {
+                            if (outerPosition === null)
                                 outerPosition = this.getPointPosition(i, centerOffset);
-                            }
                             var previousOuterPosition = this.getPointPosition(i === 0 ? this.valuesCount - 1 : i - 1, centerOffset);
                             var nextOuterPosition = this.getPointPosition(i === this.valuesCount - 1 ? 0 : i + 1, centerOffset);
                             var previousOuterHalfway = { x: (previousOuterPosition.x + outerPosition.x) / 2, y: (previousOuterPosition.y + outerPosition.y) / 2 };
@@ -1189,7 +1136,7 @@
 
                         // Extra 3px out for some label spacing
                         var pointLabelPosition = this.getPointPosition(i, this.calculateCenterOffset(this.max) + 5);
-                        ctx.font = helpers.fontString(this.pointLabelFontSize, this.pointLabelFontStyle, this.pointLabelFontFamily);
+                        ctx.font = helpers.fontString(this.pointLabelFontSize, this.pointLabelFontStyle, this.fontFamily);
                         ctx.fillStyle = this.pointLabelFontColor;
 
                         var labelsCount = this.labels.length,
@@ -1197,24 +1144,22 @@
                             quarterLabelsCount = halfLabelsCount / 2,
                             upperHalf = (i < quarterLabelsCount || i > labelsCount - quarterLabelsCount),
                             exactQuarter = (i === quarterLabelsCount || i === labelsCount - quarterLabelsCount);
-                        if (i === 0) {
+                        if (i === 0)
                             ctx.textAlign = 'center';
-                        } else if (i === halfLabelsCount) {
+                        else if (i === halfLabelsCount)
                             ctx.textAlign = 'center';
-                        } else if (i < halfLabelsCount) {
+                        else if (i < halfLabelsCount)
                             ctx.textAlign = 'left';
-                        } else {
+                        else
                             ctx.textAlign = 'right';
-                        }
 
                         // Set the correct text baseline based on outer positioning
-                        if (exactQuarter) {
+                        if (exactQuarter)
                             ctx.textBaseline = 'middle';
-                        } else if (upperHalf) {
+                        else if (upperHalf)
                             ctx.textBaseline = 'bottom';
-                        } else {
+                        else
                             ctx.textBaseline = 'top';
-                        }
 
                         ctx.fillText(this.labels[i], pointLabelPosition.x, pointLabelPosition.y);
                     }
@@ -1223,17 +1168,5 @@
         }
     });
 
-    if (typeof define === 'function' && define.amd) {
-        define('Chart', [], function() {
-            return Chart;
-        });
-    } else if (typeof module === 'object' && module.exports) {
-        module.exports = Chart;
-    }
-
     root.Chart = Chart;
-    Chart.noConflict = function() {
-        root.Chart = previous;
-        return Chart;
-    };
 }(this, this.ChartHelpers));

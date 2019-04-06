@@ -1,43 +1,8 @@
 /**
  * https://github.com/tomsouthall/Chart.HorizontalBar.js
  */
-(function(root, Chart, helpers) {
+(function(Chart, helpers) {
     'use strict';
-
-    var defaultConfig = {
-        // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-        scaleBeginAtZero: true,
-
-        // Boolean - Whether grid lines are shown across the chart
-        scaleShowGridLines: true,
-
-        // String - Colour of the grid lines
-        scaleGridLineColor: 'rgba(0,0,0,.05)',
-
-        // Number - Width of the grid lines
-        scaleGridLineWidth: 1,
-
-        // Boolean - Whether to show horizontal lines (except X axis)
-        scaleShowHorizontalLines: true,
-
-        // Boolean - Whether to show vertical lines (except Y axis)
-        scaleShowVerticalLines: true,
-
-        // Boolean - If there is a stroke on each bar
-        barShowStroke: true,
-
-        // Number - Pixel width of the bar stroke
-        barStrokeWidth: 2,
-
-        // Number - Spacing between each of the X value sets
-        barValueSpacing: 5,
-
-        // Number - Spacing between data sets within X values
-        barDatasetSpacing: 1,
-
-        // String - A legend template
-        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].fillColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
-    };
 
     Chart.HorizontalRectangle = Chart.Element.extend({
         draw: function() {
@@ -57,21 +22,18 @@
             }
 
             ctx.beginPath();
-
             ctx.fillStyle = this.fillColor;
             ctx.strokeStyle = this.strokeColor;
             ctx.lineWidth = this.strokeWidth;
 
-            // It'd be nice to keep this class totally generic to any rectangle
-            // and simply specify which border to miss out.
+            // It'd be nice to keep this class totally generic to any rectangle and simply specify which border to miss out.
             ctx.moveTo(this.left, top);
             ctx.lineTo(right, top);
             ctx.lineTo(right, bottom);
             ctx.lineTo(this.left, bottom);
             ctx.fill();
-            if (this.showStroke) {
+            if (this.showStroke)
                 ctx.stroke();
-            }
         },
 
         inRange: function(chartX, chartY) {
@@ -81,31 +43,46 @@
 
     Chart.Type.extend({
         name: 'HorizontalBar',
-        defaults: defaultConfig,
+        defaults: {
+            // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+            scaleBeginAtZero: true,
+
+            // Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+
+            // String - Colour of the grid lines
+            scaleGridLineColor: 'rgba(0,0,0,.05)',
+
+            // Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+
+            // Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+
+            // Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines: true,
+
+            // Boolean - If there is a stroke on each bar
+            barShowStroke: true,
+
+            // Number - Pixel width of the bar stroke
+            barStrokeWidth: 2,
+
+            // Number - Spacing between each of the X value sets
+            barValueSpacing: 5,
+
+            // Number - Spacing between data sets within X values
+            barDatasetSpacing: 1,
+
+            // String - A legend template
+            legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].fillColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
+        },
 
         initialize: function(data) {
             var options = this.options;
 
             this.ScaleClass = Chart.Scale.extend({
                 offsetGridLines: true,
-
-                calculateBarX: function(datasetCount, datasetIndex, barIndex) {
-                    // Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
-                    var xWidth = this.calculateBaseWidth(),
-                        xAbsolute = this.calculateX(barIndex) - (xWidth / 2),
-                        barWidth = this.calculateBarWidth(datasetCount);
-                    return xAbsolute + (barWidth * datasetIndex) + (datasetIndex * options.barDatasetSpacing) + barWidth / 2;
-                },
-
-                calculateBaseWidth: function() {
-                    return (this.calculateX(1) - this.calculateX(0)) - (2 * options.barValueSpacing);
-                },
-
-                calculateBarWidth: function(datasetCount) {
-                    // The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-                    var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
-                    return (baseWidth / datasetCount);
-                },
 
                 calculateBaseHeight: function() {
                     return ((this.endPoint - this.startPoint) / this.yLabels.length) - (2 * options.barValueSpacing);
@@ -131,9 +108,8 @@
                     var yHeight = this.calculateBaseHeight(),
                         yAbsolute = (this.endPoint + this.calculateYInvertXY(barIndex) - (yHeight / 2)) - 5,
                         barHeight = this.calculateBarHeight(datasetCount);
-                    if (datasetCount > 1) {
+                    if (datasetCount > 1)
                         yAbsolute = yAbsolute + (barHeight * (datasetIndex - 1)) - (datasetIndex * options.barDatasetSpacing) + barHeight / 2;
-                    }
                     return yAbsolute;
                 },
 
@@ -149,9 +125,8 @@
                 buildYLabels: function() {
                     this.buildYLabelCounter = (typeof this.buildYLabelCounter === 'undefined') ? 0 : this.buildYLabelCounter + 1;
                     this.buildCalculatedLabels();
-                    if (this.buildYLabelCounter === 0) {
+                    if (this.buildYLabelCounter === 0)
                         this.yLabels = this.xLabels;
-                    }
                     this.xLabels = this.calculatedLabels;
                     this.yLabelWidth = (this.display && this.showLabels) ? helpers.longestText(this.ctx, this.font, this.yLabels) : 0;
                 },
@@ -160,9 +135,8 @@
                     var innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
                         valueWidth = innerWidth / (this.steps - ((this.offsetGridLines) ? 0 : 1)),
                         valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
-                    if (this.offsetGridLines) {
+                    if (this.offsetGridLines)
                         valueOffset += (valueWidth / 2);
-                    }
                     return Math.round(valueOffset);
                 },
 
@@ -182,16 +156,14 @@
 
                             ctx.textAlign = 'right';
                             ctx.textBaseline = 'middle';
-                            if (this.showLabels) {
+                            if (this.showLabels)
                                 ctx.fillText(labelString, xStart - 10, yLabelCenter);
-                            }
 
-                            if (index === 0 && !drawHorizontalLine) {
+                            if (index === 0 && !drawHorizontalLine)
                                 drawHorizontalLine = true;
-                            }
-                            if (drawHorizontalLine) {
+                            if (drawHorizontalLine)
                                 ctx.beginPath();
-                            }
+
                             if (index > 0) {
                                 // This is a grid line in the centre, so drop that
                                 ctx.lineWidth = this.gridLineWidth;
@@ -218,7 +190,6 @@
                             ctx.lineTo(xStart, linePositionY);
                             ctx.stroke();
                             ctx.closePath();
-
                         }, this);
 
                         helpers.each(this.xLabels, function(label, index) {
@@ -314,7 +285,6 @@
                         highlightStroke: dataset.highlightStroke || dataset.strokeColor
                     }));
                 }, this);
-
             }, this);
 
             this.buildScale(data.labels);
@@ -391,22 +361,21 @@
                 textColor: this.options.scaleFontColor,
                 fontSize: this.options.scaleFontSize,
                 fontStyle: this.options.scaleFontStyle,
-                fontFamily: this.options.scaleFontFamily,
+                fontFamily: this.options.fontFamily,
                 valuesCount: labels.length,
                 beginAtZero: this.options.scaleBeginAtZero,
                 integersOnly: this.options.scaleIntegersOnly,
                 calculateYRange: function(currentHeight) {
-                    var updatedRanges = helpers.calculateScaleRange(
+                    helpers.extend(this, helpers.calculateScaleRange(
                         dataTotal(),
                         currentHeight,
                         this.fontSize,
                         this.beginAtZero,
                         this.integersOnly
-                    );
-                    helpers.extend(this, updatedRanges);
+                    ));
                 },
                 xLabels: labels,
-                font: helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
+                font: helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.fontFamily),
                 lineWidth: this.options.scaleLineWidth,
                 lineColor: this.options.scaleLineColor,
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
@@ -417,36 +386,6 @@
                 showLabels: this.options.scaleShowLabels,
                 display: this.options.showScale
             });
-        },
-
-        addData: function(valuesArray, label) {
-            // Map the values array for each of the datasets
-            helpers.each(valuesArray, function(value, datasetIndex) {
-                // Add a new point for each piece of data, passing any required data to draw.
-                this.datasets[datasetIndex].bars.push(new this.BarClass({
-                    value: value,
-                    label: label,
-                    x: this.scale.calculateBarX(this.datasets.length, datasetIndex, this.scale.valuesCount + 1),
-                    y: this.scale.endPoint,
-                    width: this.scale.calculateBarWidth(this.datasets.length),
-                    base: this.scale.endPoint,
-                    strokeColor: this.datasets[datasetIndex].strokeColor,
-                    fillColor: this.datasets[datasetIndex].fillColor
-                }));
-            }, this);
-
-            this.scale.addXLabel(label);
-            // Then re-render the chart.
-            this.update();
-        },
-
-        removeData: function() {
-            this.scale.removeXLabel();
-            // Then re-render the chart.
-            helpers.each(this.datasets, function(dataset) {
-                dataset.bars.shift();
-            }, this);
-            this.update();
         },
 
         reflow: function() {
@@ -484,4 +423,4 @@
             }, this);
         }
     });
-}(this, this.Chart, this.ChartHelpers));
+}(this.Chart, this.ChartHelpers));

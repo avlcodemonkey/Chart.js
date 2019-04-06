@@ -79,9 +79,6 @@ These are the customisation options specific to Radar charts. These options are 
 	//Number - Interval at which to draw angle lines ("every Nth point")
 	angleLineInterval: 1,
       
-	//String - Point label font declaration
-	pointLabelFontFamily : "'Arial'",
-
 	//String - Point label font weight
 	pointLabelFontStyle : "normal",
 
@@ -101,16 +98,11 @@ These are the customisation options specific to Radar charts. These options are 
 	pointDotStrokeWidth : 1,
 
 	//Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-	pointHitDetectionRadius : 20,
-
-	//Boolean - Whether to show a stroke for datasets
-	datasetStroke : true,
+	pointHitDetectionRadius : 10,
 
 	//Number - Pixel width of dataset stroke
 	datasetStrokeWidth : 2,
 
-	//Boolean - Whether to fill the dataset with a colour
-	datasetFill : true,
 	{% raw %}
 	//String - A legend template
 	legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>"
@@ -158,23 +150,4 @@ myRadarChart.datasets[0].points[2].value = 50;
 // Would update the first dataset's value of 'Sleeping' to be 50
 myRadarChart.update();
 // Calling update now updates the position of Sleeping from 90 to 50.
-```
-
-#### .addData( valuesArray, label )
-
-Calling `addData(valuesArray, label)` on your Chart instance passing an array of values for each dataset, along with a label for those points.
-
-```javascript
-// The values array passed into addData should be one for each dataset in the chart
-myRadarChart.addData([40, 60], "Dancing");
-// The new data will now display at the end of the chart.
-```
-
-#### .removeData( )
-
-Calling `removeData()` on your Chart instance will remove the first value for all datasets on the chart.
-
-```javascript
-myRadarChart.removeData();
-// Other points will now update to their correct positions.
 ```

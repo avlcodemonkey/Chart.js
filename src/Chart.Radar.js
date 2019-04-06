@@ -1,4 +1,4 @@
-(function(root, Chart, helpers) {
+(function(Chart, helpers) {
     'use strict';
 
     Chart.Type.extend({
@@ -25,9 +25,6 @@
             // Number - Interval at which to draw angle lines ("every Nth point")
             angleLineInterval: 1,
 
-            // String - Point label font declaration
-            pointLabelFontFamily: 'Arial',
-
             // String - Point label font weight
             pointLabelFontStyle: 'normal',
 
@@ -47,16 +44,10 @@
             pointDotStrokeWidth: 1,
 
             // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-            pointHitDetectionRadius: 20,
-
-            // Boolean - Whether to show a stroke for datasets
-            datasetStroke: true,
+            pointHitDetectionRadius: 10,
 
             // Number - Pixel width of dataset stroke
             datasetStrokeWidth: 2,
-
-            // Boolean - Whether to fill the dataset with a colour
-            datasetFill: true,
 
             // String - A legend template
             legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
@@ -143,15 +134,13 @@
                 activePointsCollection = [];
 
             // If we're at the top, make the pointIndex 0 to get the first of the array.
-            if (pointIndex >= this.scale.valuesCount || pointIndex < 0) {
+            if (pointIndex >= this.scale.valuesCount || pointIndex < 0)
                 pointIndex = 0;
-            }
 
-            if (fromCenter.distance <= this.scale.drawingArea) {
+            if (fromCenter.distance <= this.scale.drawingArea)
                 helpers.each(this.datasets, function(dataset) {
                     activePointsCollection.push(dataset.points[pointIndex]);
                 });
-            }
 
             return activePointsCollection;
         },
@@ -161,7 +150,7 @@
                 display: this.options.showScale,
                 fontStyle: this.options.scaleFontStyle,
                 fontSize: this.options.scaleFontSize,
-                fontFamily: this.options.scaleFontFamily,
+                fontFamily: this.options.fontFamily,
                 fontColor: this.options.scaleFontColor,
                 showLabels: this.options.scaleShowLabels,
                 showLabelBackdrop: this.options.scaleShowLabelBackdrop,
@@ -177,7 +166,6 @@
                 // Point labels at the edge of each line
                 pointLabelFontColor: this.options.pointLabelFontColor,
                 pointLabelFontSize: this.options.pointLabelFontSize,
-                pointLabelFontFamily: this.options.pointLabelFontFamily,
                 pointLabelFontStyle: this.options.pointLabelFontStyle,
                 height: this.chart.height,
                 width: this.chart.width,
@@ -198,13 +186,12 @@
             var valuesArray = (function() {
                 var totalDataArray = [];
                 helpers.each(datasets, function(dataset) {
-                    if (dataset.data) {
+                    if (dataset.data)
                         totalDataArray = totalDataArray.concat(dataset.data);
-                    } else {
+                    else
                         helpers.each(dataset.points, function(point) {
                             totalDataArray.push(point.value);
                         });
-                    }
                 });
                 return totalDataArray;
             })();
@@ -219,39 +206,6 @@
                     this.options.scaleIntegersOnly
                 )
             );
-        },
-
-        addData: function(valuesArray, label) {
-            // Map the values array for each of the datasets
-            this.scale.valuesCount++;
-            helpers.each(valuesArray, function(value, datasetIndex) {
-                var pointPosition = this.scale.getPointPosition(this.scale.valuesCount, this.scale.calculateCenterOffset(value));
-                this.datasets[datasetIndex].points.push(new this.PointClass({
-                    value: value,
-                    label: label,
-                    datasetLabel: this.datasets[datasetIndex].label,
-                    x: pointPosition.x,
-                    y: pointPosition.y,
-                    strokeColor: this.datasets[datasetIndex].pointStrokeColor,
-                    fillColor: this.datasets[datasetIndex].pointColor
-                }));
-            }, this);
-
-            this.scale.labels.push(label);
-
-            this.reflow();
-
-            this.update();
-        },
-
-        removeData: function() {
-            this.scale.valuesCount--;
-            this.scale.labels.shift();
-            helpers.each(this.datasets, function(dataset) {
-                dataset.points.shift();
-            }, this);
-            this.reflow();
-            this.update();
         },
 
         update: function() {
@@ -294,28 +248,25 @@
                 ctx.strokeStyle = dataset.strokeColor;
                 ctx.beginPath();
                 helpers.each(dataset.points, function(point, index) {
-                    if (index === 0) {
+                    if (index === 0)
                         ctx.moveTo(point.x, point.y);
-                    } else {
+                    else
                         ctx.lineTo(point.x, point.y);
-                    }
                 }, this);
                 ctx.closePath();
                 ctx.stroke();
 
                 ctx.fillStyle = dataset.fillColor;
-                if (this.options.datasetFill) {
-                    ctx.fill();
-                }
+                ctx.fill();
+
                 // Now draw the points over the line
                 // A little inefficient double looping, but better than the line
                 // lagging behind the point positions
                 helpers.each(dataset.points, function(point) {
-                    if (point.hasValue()) {
+                    if (point.hasValue())
                         point.draw();
-                    }
                 });
             }, this);
         }
     });
-}(this, this.Chart, this.ChartHelpers));
+}(this.Chart, this.ChartHelpers));

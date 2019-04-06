@@ -22,25 +22,20 @@
         var additionalArgs = Array.prototype.slice.call(arguments, 3);
         // Check to see if null or undefined firstly.
         if (loopable) {
-            if (loopable.length === +loopable.length) {
-                var i;
-                for (i = 0; i < loopable.length; i++) {
+            if (loopable.length === +loopable.length)
+                for (var i = 0; i < loopable.length; i++)
                     callback.apply(self, [loopable[i], i].concat(additionalArgs));
-                }
-            } else {
-                for (var item in loopable) {
+            else
+                for (var item in loopable)
                     callback.apply(self, [loopable[item], item].concat(additionalArgs));
-                }
-            }
         }
     };
 
     helpers.clone = function(obj) {
         var objClone = {};
         helpers.each(obj, function(value, key) {
-            if (obj.hasOwnProperty(key)) {
+            if (obj.hasOwnProperty(key))
                 objClone[key] = value;
-            }
         });
         return objClone;
     };
@@ -48,9 +43,8 @@
     helpers.extend = function(base) {
         helpers.each(Array.prototype.slice.call(arguments, 1), function(extensionObject) {
             helpers.each(extensionObject, function(value, key) {
-                if (extensionObject.hasOwnProperty(key)) {
+                if (extensionObject.hasOwnProperty(key))
                     base[key] = value;
-                }
             });
         });
         return base;
@@ -66,9 +60,8 @@
     helpers.where = function(collection, filterCallback) {
         var filtered = [];
         helpers.each(collection, function(item) {
-            if (filterCallback(item)) {
+            if (filterCallback(item))
                 filtered.push(item);
-            }
         });
 
         return filtered;
@@ -76,27 +69,23 @@
 
     helpers.findNextWhere = function(arrayToSearch, filterCallback, startIndex) {
         // Default to start of the array
-        if (!startIndex) {
+        if (!startIndex)
             startIndex = -1;
-        }
         for (var i = startIndex + 1; i < arrayToSearch.length; i++) {
             var currentItem = arrayToSearch[i];
-            if (filterCallback(currentItem)) {
+            if (filterCallback(currentItem))
                 return currentItem;
-            }
         }
     };
 
     helpers.findPreviousWhere = function(arrayToSearch, filterCallback, startIndex) {
         // Default to end of the array
-        if (!startIndex) {
+        if (!startIndex)
             startIndex = arrayToSearch.length;
-        }
         for (var i = startIndex - 1; i >= 0; i--) {
             var currentItem = arrayToSearch[i];
-            if (filterCallback(currentItem)) {
+            if (filterCallback(currentItem))
                 return currentItem;
-            }
         }
     };
 
@@ -111,7 +100,8 @@
 
         ChartElement.extend = inherits;
 
-        if (extensions) helpers.extend(ChartElement.prototype, extensions);
+        if (extensions)
+            helpers.extend(ChartElement.prototype, extensions);
 
         ChartElement.__super__ = parent.prototype;
 
@@ -143,23 +133,17 @@
     helpers.getDecimalPlaces = function(num) {
         if (num % 1 !== 0 && helpers.isNumber(num)) {
             var s = num.toString();
-            if (s.indexOf('e-') < 0) {
-                // no exponent, e.g. 0.01
+            // no exponent, e.g. 0.01
+            if (s.indexOf('e-') < 0)
                 return s.split('.')[1].length;
-            }
-            else if (s.indexOf('.') < 0) {
-                // no decimal point, e.g. 1e-9
+            // no decimal point, e.g. 1e-9
+            if (s.indexOf('.') < 0)
                 return parseInt(s.split('e-')[1]);
-            }
-            else {
-                // exponent and decimal point, e.g. 1.23e-9
-                var parts = s.split('.')[1].split('e-');
-                return parts[0].length + parseInt(parts[1]);
-            }
+            // exponent and decimal point, e.g. 1.23e-9
+            var parts = s.split('.')[1].split('e-');
+            return parts[0].length + parseInt(parts[1]);
         }
-        else {
-            return 0;
-        }
+        return 0;
     };
 
     helpers.toRadians = function(degrees) {
@@ -174,9 +158,8 @@
         var angle = Math.PI * 2 + Math.atan2(distanceFromYCenter, distanceFromXCenter);
 
         // If the segment is in the top left quadrant, we need to add another rotation to the angle
-        if (distanceFromXCenter < 0 && distanceFromYCenter < 0) {
+        if (distanceFromXCenter < 0 && distanceFromYCenter < 0)
             angle += Math.PI * 2;
-        }
 
         return {
             angle: angle,
@@ -216,7 +199,8 @@
         // Filter out null values since these would min() to zero
         var values = [];
         helpers.each(valuesArray, function(v) {
-            v === null || values.push(v);
+            if (v !== null)
+                values.push(v);
         });
         var minValue = helpers.min(values),
             maxValue = helpers.max(values);
@@ -226,12 +210,11 @@
         if (maxValue === minValue) {
             maxValue += 0.5;
             // So we don't end up with a graph with a negative start value if we've said always start from zero
-            if (minValue >= 0.5 && !startFromZero) {
+            if (minValue >= 0.5 && !startFromZero)
                 minValue -= 0.5;
-            } else {
+            else
                 // Make up a whole number above the values
                 maxValue += 0.5;
-            }
         }
 
         var valueRange = Math.abs(maxValue - minValue),
@@ -248,9 +231,8 @@
                 stepValue *= 2;
                 numberOfSteps = Math.round(graphRange / stepValue);
                 // Don't ever deal with a decimal number of steps - cancel fitting and just use the minimum number of steps.
-                if (numberOfSteps % 1 !== 0) {
+                if (numberOfSteps % 1 !== 0)
                     skipFitting = true;
-                }
             } else {
                 // We can fit in double the amount of scale points on the scale
                 // If user has declared ints only, and the step value isn't a decimal
@@ -268,7 +250,6 @@
                     stepValue /= 2;
                     numberOfSteps = Math.round(graphRange / stepValue);
                 }
-
             }
         }
 
@@ -291,9 +272,8 @@
     // Javascript micro templating by John Resig - source at http://ejohn.org/blog/javascript-micro-templating/
     helpers.template = function(templateString, valuesObject) {
         // If templateString is function rather than string-template - call the function for valuesObject
-        if (templateString instanceof Function) {
+        if (templateString instanceof Function)
             return templateString(valuesObject);
-        }
 
         var cache = {};
         function tmpl(str, data) {
@@ -339,7 +319,6 @@
         if (e.touches) {
             mouseX = e.touches[0].clientX - boundingRect.left;
             mouseY = e.touches[0].clientY - boundingRect.top;
-
         } else {
             mouseX = e.clientX - boundingRect.left;
             mouseY = e.clientY - boundingRect.top;
@@ -367,7 +346,8 @@
         helpers.each(arrayOfEvents, function(handler, eventName) {
             chartInstance.chart.canvas.removeEventListener(eventName, handler);
         });
-        window && arrayOfEvents['windowResize'] && window.removeEventListener('resize', arrayOfEvents['windowResize']);
+        if (window && arrayOfEvents.windowResize)
+            window.removeEventListener('resize', arrayOfEvents.windowResize);
     };
 
     helpers.getMaximumWidth = function(domNode) {

@@ -135,27 +135,3 @@ myPolarAreaChart.segments[1].value = 10;
 myPolarAreaChart.update();
 // Calling update now updates the position of Green from 50 to 10.
 ```
-
-#### .addData( segmentData, index )
-
-Calling `addData(segmentData, index)` on your Chart instance passing an object in the same format as in the constructor. There is an option second argument of 'index', this determines at what index the new segment should be inserted into the chart.
-
-```javascript
-// An object in the same format as the original data source
-myPolarAreaChart.addData({
-	value: 130,
-	color: "#B48EAD",
-	highlight: "#C69CBE",
-	label: "Purple"
-});
-// The new segment will now display.
-```
-
-#### .removeData( index )
-
-Calling `removeData(index)` on your Chart instance will remove segment at that particular index. If none is provided, it will default to the last segment.
-
-```javascript
-myPolarAreaChart.removeData();
-// Other segments will update to fill the empty space left.
-```

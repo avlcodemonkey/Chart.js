@@ -111,29 +111,3 @@ myDoughnutChart.update();
 // Calling update now updates the circumference of the segment 'Green' from 50 to 10.
 // and transitions other segment widths
 ```
-
-#### .addData( segmentData, index )
-
-Calling `addData(segmentData, index)` on your Chart instance passing an object in the same format as in the constructor. There is an optional second argument of 'index', this determines at what index the new segment should be inserted into the chart.
-
-If you don't specify a color and highliht, one will be chosen from the global default array: segmentColorDefault and the corresponding segmentHighlightColorDefault.  The index of the addded data is used to lookup a corresponding color from the defaults.
-
-```javascript
-// An object in the same format as the original data source
-myDoughnutChart.addData({
-	value: 130,
-	color: "#B48EAD",
-	highlight: "#C69CBE",
-	label: "Purple"
-});
-// The new segment will now display.
-```
-
-#### .removeData( index )
-
-Calling `removeData(index)` on your Chart instance will remove segment at that particular index. If none is provided, it will default to the last segment.
-
-```javascript
-myDoughnutChart.removeData();
-// Other segments will update to fill the empty space left.
-```

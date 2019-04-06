@@ -1,59 +1,48 @@
-(function(root, Chart, helpers) {
+(function(Chart, helpers) {
     'use strict';
-
-    var defaultConfig = {
-        // Boolean - Whether grid lines are shown across the chart
-        scaleShowGridLines: true,
-
-        // String - Colour of the grid lines
-        scaleGridLineColor: 'rgba(0,0,0,.05)',
-
-        // Number - Width of the grid lines
-        scaleGridLineWidth: 1,
-
-        // Boolean - Whether to show horizontal lines (except X axis)
-        scaleShowHorizontalLines: true,
-
-        // Boolean - Whether to show vertical lines (except Y axis)
-        scaleShowVerticalLines: true,
-
-        // Boolean - Whether the line is curved between points
-        bezierCurve: true,
-
-        // Number - Tension of the bezier curve between points
-        bezierCurveTension: 0.4,
-
-        // Boolean - Whether to show a dot for each point
-        pointDot: true,
-
-        // Number - Radius of each point dot in pixels
-        pointDotRadius: 4,
-
-        // Number - Pixel width of point dot stroke
-        pointDotStrokeWidth: 1,
-
-        // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-        pointHitDetectionRadius: 20,
-
-        // Boolean - Whether to show a stroke for datasets
-        datasetStroke: true,
-
-        // Number - Pixel width of dataset stroke
-        datasetStrokeWidth: 2,
-
-        // Boolean - Whether to fill the dataset with a colour
-        datasetFill: true,
-
-        // String - A legend template
-        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>',
-
-        // Boolean - Whether to horizontally center the label and point dot inside the grid
-        offsetGridLines: false
-    };
 
     Chart.Type.extend({
         name: 'Line',
-        defaults: defaultConfig,
+        defaults: {
+            // Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+
+            // String - Colour of the grid lines
+            scaleGridLineColor: 'rgba(0,0,0,.05)',
+
+            // Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+
+            // Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+
+            // Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines: true,
+
+            // Number - Tension of the bezier curve between points
+            bezierCurveTension: 0.4,
+
+            // Boolean - Whether to show a dot for each point
+            pointDot: true,
+
+            // Number - Radius of each point dot in pixels
+            pointDotRadius: 4,
+
+            // Number - Pixel width of point dot stroke
+            pointDotStrokeWidth: 1,
+
+            // Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            pointHitDetectionRadius: 10,
+
+            // Number - Pixel width of dataset stroke
+            datasetStrokeWidth: 2,
+
+            // String - A legend template
+            legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="legend-icon" style="background-color:<%=datasets[i].strokeColor%>"></span><span class="legend-text"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>',
+
+            // Boolean - Whether to horizontally center the label and point dot inside the grid
+            offsetGridLines: false
+        },
 
         initialize: function(data) {
             // Declare the extension of the default point, to cater for the options passed in to the constructor
@@ -148,7 +137,8 @@
                 eventPosition = helpers.getRelativePosition(e);
             helpers.each(this.datasets, function(dataset) {
                 helpers.each(dataset.points, function(point) {
-                    if (point.inRange(eventPosition.x, eventPosition.y)) pointsArray.push(point);
+                    if (point.inRange(eventPosition.x, eventPosition.y))
+                        pointsArray.push(point);
                 });
             }, this);
             return pointsArray;
@@ -174,23 +164,22 @@
                 offsetGridLines: this.options.offsetGridLines,
                 fontSize: this.options.scaleFontSize,
                 fontStyle: this.options.scaleFontStyle,
-                fontFamily: this.options.scaleFontFamily,
+                fontFamily: this.options.fontFamily,
                 valuesCount: labels.length,
                 beginAtZero: this.options.scaleBeginAtZero,
                 integersOnly: this.options.scaleIntegersOnly,
                 calculateYRange: function(currentHeight) {
-                    var updatedRanges = helpers.calculateScaleRange(
+                    helpers.extend(this, helpers.calculateScaleRange(
                         dataTotal(),
                         currentHeight,
                         this.fontSize,
                         this.beginAtZero,
                         this.integersOnly
-                    );
-                    helpers.extend(this, updatedRanges);
+                    ));
                 },
                 xLabels: labels,
                 showXLabels: (this.options.showXLabels) ? this.options.showXLabels : true,
-                font: helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
+                font: helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.fontFamily),
                 lineWidth: this.options.scaleLineWidth,
                 lineColor: this.options.scaleLineColor,
                 showHorizontalLines: this.options.scaleShowHorizontalLines,
@@ -203,41 +192,11 @@
             });
         },
 
-        addData: function(valuesArray, label) {
-            // Map the values array for each of the datasets
-            helpers.each(valuesArray, function(value, datasetIndex) {
-                // Add a new point for each piece of data, passing any required data to draw.
-                this.datasets[datasetIndex].points.push(new this.PointClass({
-                    value: value,
-                    label: label,
-                    datasetLabel: this.datasets[datasetIndex].label,
-                    x: this.scale.calculateX(this.scale.valuesCount + 1),
-                    y: this.scale.endPoint,
-                    strokeColor: this.datasets[datasetIndex].pointStrokeColor,
-                    fillColor: this.datasets[datasetIndex].pointColor
-                }));
-            }, this);
-
-            this.scale.addXLabel(label);
-            // Then re-render the chart.
-            this.update();
-        },
-
-        removeData: function() {
-            this.scale.removeXLabel();
-            // Then re-render the chart.
-            helpers.each(this.datasets, function(dataset) {
-                dataset.points.shift();
-            }, this);
-            this.update();
-        },
-
         reflow: function() {
-            var newScaleProps = helpers.extend({
+            this.scale.update(helpers.extend({
                 height: this.chart.height,
                 width: this.chart.width
-            });
-            this.scale.update(newScaleProps);
+            }));
         },
 
         draw: function(ease) {
@@ -251,7 +210,8 @@
                 nextPoint = function(point, collection, index) { return helpers.findNextWhere(collection, hasValue, index) || point; },
                 previousPoint = function(point, collection, index) { return helpers.findPreviousWhere(collection, hasValue, index) || point; };
 
-            if (!this.scale) return;
+            if (!this.scale)
+                return;
             this.scale.draw(easingDecimal);
 
             helpers.each(this.datasets, function(dataset) {
@@ -270,32 +230,27 @@
 
                 // Control points need to be calculated in a separate loop, because we need to know the current x/y of the point
                 // This would cause issues because the y of the next point would be 0, so beziers would be skewed
-                if (this.options.bezierCurve) {
-                    helpers.each(pointsWithValues, function(point, index) {
-                        var tension = (index > 0 && index < pointsWithValues.length - 1) ? this.options.bezierCurveTension : 0;
-                        point.controlPoints = helpers.splineCurve(
-                            previousPoint(point, pointsWithValues, index),
-                            point,
-                            nextPoint(point, pointsWithValues, index),
-                            tension
-                        );
+                helpers.each(pointsWithValues, function(point, index) {
+                    point.controlPoints = helpers.splineCurve(
+                        previousPoint(point, pointsWithValues, index),
+                        point,
+                        nextPoint(point, pointsWithValues, index),
+                        index > 0 && index < pointsWithValues.length - 1 ? this.options.bezierCurveTension : 0
+                    );
 
-                        // Prevent the bezier going outside of the bounds of the graph
-                        // Cap puter bezier handles to the upper/lower scale bounds
-                        if (point.controlPoints.outer.y > this.scale.endPoint) {
-                            point.controlPoints.outer.y = this.scale.endPoint;
-                        } else if (point.controlPoints.outer.y < this.scale.startPoint) {
-                            point.controlPoints.outer.y = this.scale.startPoint;
-                        }
+                    // Prevent the bezier going outside of the bounds of the graph
+                    // Cap puter bezier handles to the upper/lower scale bounds
+                    if (point.controlPoints.outer.y > this.scale.endPoint)
+                        point.controlPoints.outer.y = this.scale.endPoint;
+                    else if (point.controlPoints.outer.y < this.scale.startPoint)
+                        point.controlPoints.outer.y = this.scale.startPoint;
 
-                        // Cap inner bezier handles to the upper/lower scale bounds
-                        if (point.controlPoints.inner.y > this.scale.endPoint) {
-                            point.controlPoints.inner.y = this.scale.endPoint;
-                        } else if (point.controlPoints.inner.y < this.scale.startPoint) {
-                            point.controlPoints.inner.y = this.scale.startPoint;
-                        }
-                    }, this);
-                }
+                    // Cap inner bezier handles to the upper/lower scale bounds
+                    if (point.controlPoints.inner.y > this.scale.endPoint)
+                        point.controlPoints.inner.y = this.scale.endPoint;
+                    else if (point.controlPoints.inner.y < this.scale.startPoint)
+                        point.controlPoints.inner.y = this.scale.startPoint;
+                }, this);
 
                 // Draw the line between all the points
                 ctx.lineWidth = this.options.datasetStrokeWidth;
@@ -306,27 +261,22 @@
                     if (index === 0) {
                         ctx.moveTo(point.x, point.y);
                     } else {
-                        if (this.options.bezierCurve) {
-                            var previous = previousPoint(point, pointsWithValues, index);
-                            ctx.bezierCurveTo(
-                                previous.controlPoints.outer.x,
-                                previous.controlPoints.outer.y,
-                                point.controlPoints.inner.x,
-                                point.controlPoints.inner.y,
-                                point.x,
-                                point.y
-                            );
-                        } else {
-                            ctx.lineTo(point.x, point.y);
-                        }
+                        var previous = previousPoint(point, pointsWithValues, index);
+                        ctx.bezierCurveTo(
+                            previous.controlPoints.outer.x,
+                            previous.controlPoints.outer.y,
+                            point.controlPoints.inner.x,
+                            point.controlPoints.inner.y,
+                            point.x,
+                            point.y
+                        );
                     }
                 }, this);
 
-                if (this.options.datasetStroke) {
+                if (this.options.datasetStroke)
                     ctx.stroke();
-                }
 
-                if (this.options.datasetFill && pointsWithValues.length > 0) {
+                if (pointsWithValues.length > 0) {
                     // Round off the line by going to the base of the chart, back to the start, then fill.
                     ctx.lineTo(pointsWithValues[pointsWithValues.length - 1].x, this.scale.endPoint);
                     ctx.lineTo(pointsWithValues[0].x, this.scale.endPoint);
@@ -344,4 +294,4 @@
             }, this);
         }
     });
-}(this, this.Chart, this.ChartHelpers));
+}(this.Chart, this.ChartHelpers));

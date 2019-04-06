@@ -1,4 +1,4 @@
-(function(root, Chart, helpers) {
+(function(Chart, helpers) {
     'use strict';
 
     var defaultConfig = {
@@ -52,10 +52,9 @@
             this.calculateTotal(data);
 
             helpers.each(data, function(datapoint, index) {
-                if (!datapoint.color) {
+                if (!datapoint.color)
                     datapoint.color = 'hsl(' + (360 * index / data.length) + ', 100%, 50%)';
-                }
-                this.addData(datapoint, index, true);
+                this.addData(datapoint, index);
             }, this);
 
             this.render();
@@ -63,18 +62,18 @@
 
         getSegmentsAtEvent: function(e) {
             var segmentsArray = [];
-
             var location = helpers.getRelativePosition(e);
 
             helpers.each(this.segments, function(segment) {
-                if (segment.inRange(location.x, location.y)) segmentsArray.push(segment);
+                if (segment.inRange(location.x, location.y))
+                    segmentsArray.push(segment);
             }, this);
             return segmentsArray;
         },
 
-        addData: function(segment, atIndex, silent) {
+        addData: function(segment, atIndex) {
             var index = atIndex !== undefined ? atIndex : this.segments.length;
-            if (typeof (segment.color) === 'undefined') {
+            if (typeof segment.color === 'undefined') {
                 segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
                 segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];
             }
@@ -91,18 +90,10 @@
                 circumference: this.calculateCircumference(segment.value),
                 label: segment.label
             }));
-            if (!silent) {
-                this.reflow();
-                this.update();
-            }
         },
 
         calculateCircumference: function(value) {
-            if (this.total > 0) {
-                return (Math.PI * 2) * (value / this.total);
-            } else {
-                return 0;
-            }
+            return this.total > 0 ? ((Math.PI * 2) * (value / this.total)) : 0;
         },
 
         calculateTotal: function(data) {
@@ -124,13 +115,6 @@
                 segment.save();
             });
             this.render();
-        },
-
-        removeData: function(atIndex) {
-            var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length - 1;
-            this.segments.splice(indexToDelete, 1);
-            this.reflow();
-            this.update();
         },
 
         reflow: function() {
@@ -160,13 +144,11 @@
                 segment.endAngle = segment.startAngle + segment.circumference;
 
                 segment.draw();
-                if (index === 0) {
+                if (index === 0)
                     segment.startAngle = Math.PI * 1.5;
-                }
                 // Check to see if it's the last segment, if not get the next and update the start angle
-                if (index < this.segments.length - 1) {
+                if (index < this.segments.length - 1)
                     this.segments[index + 1].startAngle = segment.endAngle;
-                }
             }, this);
         }
     });
@@ -175,4 +157,4 @@
         name: 'Pie',
         defaults: helpers.merge(defaultConfig, { percentageInnerCutout: 0 })
     });
-}(this, this.Chart, this.ChartHelpers));
+}(this.Chart, this.ChartHelpers));

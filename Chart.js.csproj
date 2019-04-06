@@ -71,9 +71,7 @@
     <Content Include="samples\doughnut.color.html" />
     <Content Include="samples\doughnut.html" />
     <Content Include="samples\horizontalBar.html" />
-    <Content Include="samples\line-customTooltips.html" />
     <Content Include="samples\line.html" />
-    <Content Include="samples\pie-customTooltips.html" />
     <Content Include="samples\pie.html" />
     <Content Include="samples\polar-area.html" />
     <Content Include="samples\radar.html" />

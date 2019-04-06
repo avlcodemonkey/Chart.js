@@ -1,43 +1,41 @@
-(function(root, Chart, helpers) {
+(function(Chart, helpers) {
     'use strict';
-
-    var defaultConfig = {
-        // Boolean - Show a backdrop to the scale label
-        scaleShowLabelBackdrop: true,
-
-        // String - The colour of the label backdrop
-        scaleBackdropColor: 'rgba(255,255,255,0.75)',
-
-        // Boolean - Whether the scale should begin at zero
-        scaleBeginAtZero: true,
-
-        // Number - The backdrop padding above & below the label in pixels
-        scaleBackdropPaddingY: 2,
-
-        // Number - The backdrop padding to the side of the label in pixels
-        scaleBackdropPaddingX: 2,
-
-        // Boolean - Show line for each value in the scale
-        scaleShowLine: true,
-
-        // Boolean - Stroke a line around each segment in the chart
-        segmentShowStroke: true,
-
-        // String - The colour of the stroke on each segment.
-        segmentStrokeColor: '#fff',
-
-        // Number - The width of the stroke value in pixels
-        segmentStrokeWidth: 2,
-
-        // String - A legend template
-        legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
-    };
 
     Chart.Type.extend({
         // Passing in a name registers this chart in the Chart namespace
         name: 'PolarArea',
         // Providing a defaults will also register the defaults in the chart namespace
-        defaults: defaultConfig,
+        defaults: {
+            // Boolean - Show a backdrop to the scale label
+            scaleShowLabelBackdrop: true,
+
+            // String - The colour of the label backdrop
+            scaleBackdropColor: 'rgba(255,255,255,0.75)',
+
+            // Boolean - Whether the scale should begin at zero
+            scaleBeginAtZero: true,
+
+            // Number - The backdrop padding above & below the label in pixels
+            scaleBackdropPaddingY: 2,
+
+            // Number - The backdrop padding to the side of the label in pixels
+            scaleBackdropPaddingX: 2,
+
+            // Boolean - Show line for each value in the scale
+            scaleShowLine: true,
+
+            // Boolean - Stroke a line around each segment in the chart
+            segmentShowStroke: true,
+
+            // String - The colour of the stroke on each segment.
+            segmentStrokeColor: '#fff',
+
+            // Number - The width of the stroke value in pixels
+            segmentStrokeWidth: 2,
+
+            // String - A legend template
+            legendTemplate: '<ul class="chart-legend <%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span class="legend-icon" style="background-color:<%=segments[i].fillColor%>"></span><span class="legend-text"><%if(segments[i].label){%><%=segments[i].label%><%}%></span></li><%}%></ul>'
+        },
 
         // Initialize is fired when the chart is initialized - Data is passed in as a parameter
         // Config is automatically merged by the core of Chart.js, and is available at this.options
@@ -57,7 +55,7 @@
                 display: this.options.showScale,
                 fontStyle: this.options.scaleFontStyle,
                 fontSize: this.options.scaleFontSize,
-                fontFamily: this.options.scaleFontFamily,
+                fontFamily: this.options.fontFamily,
                 fontColor: this.options.scaleFontColor,
                 showLabels: this.options.scaleShowLabels,
                 showLabelBackdrop: this.options.scaleShowLabelBackdrop,
@@ -103,20 +101,18 @@
 
         getSegmentsAtEvent: function(e) {
             var segmentsArray = [];
-
             var location = helpers.getRelativePosition(e);
 
             helpers.each(this.segments, function(segment) {
-                if (segment.inRange(location.x, location.y)) {
+                if (segment.inRange(location.x, location.y))
                     segmentsArray.push(segment);
-                }
             }, this);
             return segmentsArray;
         },
 
-        addData: function(segment, atIndex, silent) {
+        addData: function(segment, atIndex) {
             var index = atIndex || this.segments.length;
-            if (typeof (segment.color) === 'undefined') {
+            if (typeof segment.color === 'undefined') {
                 segment.color = Chart.defaults.global.segmentColorDefault[index % Chart.defaults.global.segmentColorDefault.length];
                 segment.highlight = Chart.defaults.global.segmentHighlightColorDefaults[index % Chart.defaults.global.segmentHighlightColorDefaults.length];
             }
@@ -130,17 +126,6 @@
                 circumference: this.scale.getCircumference(),
                 startAngle: Math.PI * 1.5
             }));
-            if (!silent) {
-                this.reflow();
-                this.update();
-            }
-        },
-
-        removeData: function(atIndex) {
-            var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length - 1;
-            this.segments.splice(indexToDelete, 1);
-            this.reflow();
-            this.update();
         },
 
         calculateTotal: function(data) {
@@ -203,7 +188,6 @@
                     outerRadius: this.scale.calculateCenterOffset(segment.value)
                 });
             }, this);
-
         },
 
         draw: function(ease) {
@@ -219,17 +203,16 @@
                 segment.endAngle = segment.startAngle + segment.circumference;
 
                 // If we've removed the first segment we need to set the first one to start at the top.
-                if (index === 0) {
+                if (index === 0)
                     segment.startAngle = Math.PI * 1.5;
-                }
 
                 // Check to see if it's the last segment, if not get the next and update the start angle
-                if (index < this.segments.length - 1) {
+                if (index < this.segments.length - 1)
                     this.segments[index + 1].startAngle = segment.endAngle;
-                }
+
                 segment.draw();
             }, this);
             this.scale.draw();
         }
     });
-}(this, this.Chart, this.ChartHelpers));
+}(this.Chart, this.ChartHelpers));
